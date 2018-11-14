@@ -33,11 +33,4 @@ public interface DrawingEngine {
     public void save(String path);
     public void load(String path);
 
-    void selectShapes(Point point);
-
-    void unSelectAll();
-
-    void deleteSelectedShapes();
-
-    void setColor(Color color);
 }

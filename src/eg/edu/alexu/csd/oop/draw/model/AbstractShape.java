@@ -1,6 +1,7 @@
 package eg.edu.alexu.csd.oop.draw.model;
 
 import eg.edu.alexu.csd.oop.draw.Shape;
+import jdk.nashorn.internal.objects.annotations.Getter;
 
 import java.awt.*;
 import java.util.Map;
@@ -34,22 +35,22 @@ public abstract class AbstractShape implements Shape {
     }
 
     @Override
-    public void setColor(Color color) {
+    public final void setColor(Color color) {
         this.color = color;
     }
 
     @Override
-    public Color getColor() {
+    public final Color getColor() {
         return color;
     }
 
     @Override
-    public void setFillColor(Color color) {
+    public final void setFillColor(Color color) {
         this.fillColor = color;
     }
 
     @Override
-    public Color getFillColor() {
+    public final Color getFillColor() {
         return fillColor;
     }
 
@@ -61,35 +62,29 @@ public abstract class AbstractShape implements Shape {
         return null;
     }
 
-    @Override
     public abstract boolean isOnBoarder(Point point);
 
-    @Override
-    public boolean isCompleted() {
+    public final boolean isCompleted() {
         return completed;
     }
 
-    public void setCompleted(boolean c) {
+    public final void setCompleted(boolean c) {
         completed = c;
     }
 
-    @Override
     public void release() {
         completed = true;
     }
 
-    @Override
-    public boolean isSelected() {
+    public final boolean isSelected() {
         return selected;
     }
 
-    @Override
-    public void select() {
+    public final void select() {
         selected = true;
     }
 
-    @Override
-    public void unSelect() {
+    public final void unSelect() {
         selected = false;
     }
 }

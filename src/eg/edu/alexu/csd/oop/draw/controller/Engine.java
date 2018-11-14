@@ -2,6 +2,7 @@ package eg.edu.alexu.csd.oop.draw.controller;
 
 import eg.edu.alexu.csd.oop.draw.DrawingEngine;
 import eg.edu.alexu.csd.oop.draw.Shape;
+import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -10,9 +11,12 @@ import java.util.List;
 
 public class Engine implements DrawingEngine {
 
-    List<Shape> shapes;
+    private static Engine instance = null;
+
+    List<AbstractShape> shapes;
     private Color color;
-    public Engine(){
+
+    private Engine(){
         shapes = new ArrayList<>();
         color = Color.BLACK;
     }
@@ -25,7 +29,7 @@ public class Engine implements DrawingEngine {
 
     @Override
     public void addShape(Shape shape) {
-        shapes.add(shape);
+        shapes.add((AbstractShape)shape);
         shape.setColor(color);
     }
 
@@ -76,9 +80,8 @@ public class Engine implements DrawingEngine {
 
     }
 
-    @Override
     public void selectShapes(Point point) {
-        for (Shape shape : shapes){
+        for (AbstractShape shape : shapes){
             if (!shape.isSelected() && shape.isOnBoarder(point)) {
                 shape.select();
                 return;
@@ -87,23 +90,24 @@ public class Engine implements DrawingEngine {
         unSelectAll();
     }
 
-    @Override
     public void unSelectAll(){
-        for(Shape shape : shapes)shape.unSelect();
-    }
-    @Override
-    public void deleteSelectedShapes() {
-        shapes.removeIf(Shape::isSelected);
+        for(AbstractShape shape : shapes)shape.unSelect();
     }
 
-    @Override
+    public void deleteSelectedShapes() {
+        shapes.removeIf(AbstractShape::isSelected);
+    }
+
     public void setColor(Color color) {
         this.color = color;
-        for (Shape shape : shapes){
+        for (AbstractShape shape : shapes){
             if (shape.isSelected()) {
                 shape.setColor(color);
             }
         }
         unSelectAll();
+    }
+    public synchronized static Engine getInstance(){
+        return instance == null? instance = new Engine() : instance;
     }
 }

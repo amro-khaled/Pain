@@ -5,7 +5,7 @@ import java.awt.*;
 public interface Shape{
 
     /*
-     * This is a college assignment, I beleive using an abstract class for Shape would help to reduce the code
+     * This is a college assignment, I believe using an abstract class for Shape would help to reduce the code
      * so I implemented this interface by an abstract class called AbstractShape.
      * That makes the implementation easier as well as passes the tests for the college.
      */
@@ -27,15 +27,4 @@ public interface Shape{
 
     public Object clone() throws CloneNotSupportedException; // create a deep clone of the shape
 
-    boolean isOnBoarder(java.awt.Point point);
-
-    boolean isCompleted();
-
-    void release();
-
-    boolean isSelected();
-
-    void select();
-
-    void unSelect();
 }

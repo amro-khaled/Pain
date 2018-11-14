@@ -1,13 +1,16 @@
-package eg.edu.alexu.csd.oop.draw.view;
+package eg.edu.alexu.csd.oop.draw.controller;
 
 import eg.edu.alexu.csd.oop.draw.Shape;
 import eg.edu.alexu.csd.oop.draw.model.*;
 import eg.edu.alexu.csd.oop.draw.model.Rectangle;
+import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
 import java.awt.*;
 
-public class PanelState {
+public class PanelController {
+
     public Shape createAndGetShape(Point point) {
+        if(curButton == null) return null;
         switch (curButton){
             case LINE:
                 return curShape = new Line(point);
@@ -24,9 +27,11 @@ public class PanelState {
         }
         return null;
     }
+
     public Shape getShape(){
         return curShape;
     }
+    
     public void setShape(ShapeButton sb){
         curButton = sb;
     }
@@ -36,7 +41,7 @@ public class PanelState {
             curShape.release();
             if(curShape.isCompleted()) {
                 curShape = null;
-                curButton = ShapeButton.NONE;
+                curButton = null;
             }
         }
     }
@@ -46,8 +51,26 @@ public class PanelState {
     }
 
     public enum ShapeButton{
-        NONE, LINE, CIRCLE, ELLIPSE, TRIANGLE, RECTANGLE, SQUARE;
+
+        LINE(STATIC_VARS.PANEL_BUTTON_NAME_LINE),
+        CIRCLE(STATIC_VARS.PANEL_BUTTON_NAME_CIRCLE),
+        ELLIPSE(STATIC_VARS.PANEL_BUTTON_NAME_ELLIPSE),
+        TRIANGLE(STATIC_VARS.PANEL_BUTTON_NAME_TRIANGLE),
+        RECTANGLE(STATIC_VARS.PANEL_BUTTON_NAME_RECTANGLE),
+        SQUARE(STATIC_VARS.PANEL_BUTTON_NAME_SQUARE);
+
+        private final String text;
+        ShapeButton(String text){
+            this.text = text;
+        }
+        @Override
+        public String toString(){
+            return this.text;
+        }
     }
-    ShapeButton curButton = ShapeButton.NONE;
-    Shape curShape = null;
+
+    public ShapeButton curButton = null;
+
+    AbstractShape curShape = null;
+
 }

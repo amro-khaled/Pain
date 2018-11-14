@@ -1,7 +1,7 @@
 package eg.edu.alexu.csd.oop.draw.view;
 
-import eg.edu.alexu.csd.oop.draw.DrawingEngine;
 import eg.edu.alexu.csd.oop.draw.controller.ColorModifierListener;
+import eg.edu.alexu.csd.oop.draw.controller.PanelController;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 import eg.edu.alexu.csd.oop.draw.controller.Engine;
 
@@ -12,18 +12,18 @@ import java.awt.*;
 
 public class PaintWindow extends JFrame {
     private JPanel paintPanel;
-    DrawingEngine engine;
+    Engine engine;
     Container container;
-    PanelState panelState;
+    PanelController panelController;
 
     public PaintWindow() {
         super(STATIC_VARS.WINDOW_TITLE);
         getContentPane().setSize(600, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        panelState = new PanelState();
+        panelController = new PanelController();
         container = getContentPane();
-        engine = new Engine();
-        paintPanel = new PaintPanel(engine, panelState);
+        engine = Engine.getInstance();
+        paintPanel = new PaintPanel(panelController);
         paintPanel.setBackground(STATIC_VARS.PANEL_BACKGROUND_COLOR);
         container.setBackground(Color.lightGray);
         BorderLayout layout = new BorderLayout(2, 0);
@@ -39,44 +39,7 @@ public class PaintWindow extends JFrame {
     }
 
     private void initShapeButtons() {
-        JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(6, 1));
-        JButton lineBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_LINE);
-        buttons.add(lineBtn);
-        lineBtn.addActionListener(e -> {
-            panelState.curButton = PanelState.ShapeButton.LINE;
-            engine.unSelectAll();
-        });
-        JButton circleBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_CIRCLE);
-        buttons.add(circleBtn);
-        circleBtn.addActionListener(e -> {
-            panelState.curButton = PanelState.ShapeButton.CIRCLE;
-            engine.unSelectAll();
-        });
-        JButton ellipseBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_ELLIPSE);
-        buttons.add(ellipseBtn);
-        ellipseBtn.addActionListener(e -> {
-            panelState.curButton = PanelState.ShapeButton.ELLIPSE;
-            engine.unSelectAll();
-        });
-        JButton triangleBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_TRIANGLE);
-        buttons.add(triangleBtn);
-        triangleBtn.addActionListener(e -> {
-            panelState.curButton = PanelState.ShapeButton.TRIANGLE;
-            engine.unSelectAll();
-        });
-        JButton rectangleBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_RECTANGLE);
-        buttons.add(rectangleBtn);
-        rectangleBtn.addActionListener(e -> {
-            panelState.curButton = PanelState.ShapeButton.RECTANGLE;
-            engine.unSelectAll();
-        });
-        JButton squareBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_SQUARE);
-        buttons.add(squareBtn);
-        squareBtn.addActionListener(e -> {
-            panelState.curButton = PanelState.ShapeButton.SQUARE;
-            engine.unSelectAll();
-        });
+        JPanel buttons = addShapesButtons();
         JButton deleteBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_DELETE);
         buttons.add(deleteBtn);
         deleteBtn.addActionListener(e -> {
@@ -86,6 +49,21 @@ public class PaintWindow extends JFrame {
 
         container.add(BorderLayout.EAST, buttons);
     }
+
+    private JPanel addShapesButtons() {
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new GridLayout(6, 1));
+        for(PanelController.ShapeButton shape : PanelController.ShapeButton.values()){
+            JButton btn = new JButton(shape.toString());
+            buttons.add(btn);
+            btn.addActionListener(e -> {
+                panelController.curButton = shape;
+                engine.unSelectAll();
+            });
+        }
+        return buttons;
+    }
+
     private void initColorChooser(){
         JColorChooser chooser = new JColorChooser();
         AbstractColorChooserPanel[] oldPanels = chooser.getChooserPanels();
@@ -96,7 +74,7 @@ public class PaintWindow extends JFrame {
                 chooser.removeChooserPanel(oldPanels[i]);
             }
         }
-        chooser.getSelectionModel().addChangeListener(new ColorModifierListener(this, engine, chooser));
+        chooser.getSelectionModel().addChangeListener(new ColorModifierListener(this, chooser));
         AbstractColorChooserPanel colorPanel = chooser.getChooserPanels()[0];
         JPanel chooserPanel = (JPanel) colorPanel.getComponent(0);
         container.add(BorderLayout.SOUTH, chooserPanel);

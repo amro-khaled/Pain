@@ -1,9 +1,8 @@
 package eg.edu.alexu.csd.oop.draw.controller;
 
-import eg.edu.alexu.csd.oop.draw.DrawingEngine;
 import eg.edu.alexu.csd.oop.draw.Shape;
+import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
 import eg.edu.alexu.csd.oop.draw.model.Line;
-import eg.edu.alexu.csd.oop.draw.view.PanelState;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -11,33 +10,33 @@ import java.awt.event.MouseListener;
 
 public class PaintPanelMouseListener implements MouseListener {
 
-    private PanelState panelState;
-    private DrawingEngine engine;
+    private PanelController panelController;
+    private Engine engine;
     private JPanel paintPanel;
 
-    public PaintPanelMouseListener(DrawingEngine engine, JPanel paintPanel, PanelState panelState) {
+    public PaintPanelMouseListener(JPanel paintPanel, PanelController panelController) {
         super();
-        this.engine = engine;
+        this.engine = Engine.getInstance();
         this.paintPanel = paintPanel;
-        this.panelState = panelState;
+        this.panelController = panelController;
     }
 
     Line x;
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(panelState.getShape() == null){
+        if(panelController.getShape() == null){
             engine.selectShapes(e.getPoint());
         }else {
-            panelState.release();
+            panelController.release();
         }
         paintPanel.repaint();
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(panelState.getShape() != null && !panelState.getShape().isCompleted())return;
-        Shape shape = panelState.createAndGetShape(e.getPoint());
+        if(panelController.getShape() != null && !((AbstractShape) panelController.getShape()).isCompleted())return;
+        Shape shape = panelController.createAndGetShape(e.getPoint());
         if (shape == null) return;
         engine.addShape(shape);
         paintPanel.repaint();
@@ -45,7 +44,7 @@ public class PaintPanelMouseListener implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        panelState.release();
+        panelController.release();
         paintPanel.repaint();
     }
 
