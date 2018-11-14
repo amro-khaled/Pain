@@ -28,6 +28,10 @@ public class PanelController {
         return null;
     }
 
+    // Determines the mode of the panel.
+    public boolean isPaintingMode(){
+        return curButton != null;
+    }
     public Shape getShape(){
         return curShape;
     }
