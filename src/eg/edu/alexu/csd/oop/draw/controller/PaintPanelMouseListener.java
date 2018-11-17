@@ -23,7 +23,7 @@ public class PaintPanelMouseListener implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(!panelController.isPaintingMode()){
+        if(panelController.getShape() == null){
             engine.selectShapes(e.getPoint());
         }else {
             panelController.release();
@@ -33,8 +33,9 @@ public class PaintPanelMouseListener implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(!panelController.isPaintingMode()) return;
+        if(panelController.getShape() != null && !((AbstractShape) panelController.getShape()).isCompleted()) return;
         Shape shape = panelController.createAndGetShape(e.getPoint());
+        if (shape == null) return;
         engine.addShape(shape);
         paintPanel.repaint();
     }

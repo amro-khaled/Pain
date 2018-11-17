@@ -5,16 +5,21 @@ import java.util.Map;
 
 public class Circle extends Ellipse {
 
-    public Circle(Point center) {
-        super(center);
+    public Circle(Point centerPoint) {
+        super(centerPoint);
     }
 
     @Override
     public void setPosition(Point position) {
-        int radius = (int) Math.sqrt(Math.pow(center.x - position.x, 2)  + Math.pow(center.y - position.y, 2));
+        int radius = (int) Math.sqrt(Math.pow(centerPoint.x - position.x, 2)  + Math.pow(centerPoint.y - position.y, 2));
         width = height = radius;
+        buildCenters();
     }
 
+
+    protected void setRadius(int radius){
+        width = height = radius;
+    }
     @Override
     public Point getPosition() {
         return null;

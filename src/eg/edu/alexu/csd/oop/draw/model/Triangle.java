@@ -22,7 +22,12 @@ public class Triangle extends AbstractShape {
             secondPoint = position;
         } else {
             thirdPoint = position;
+            buildCenters();
         }
+    }
+    private void buildCenters(){
+        centers = new Center();
+        centers.add((firstPoint.x + secondPoint.x + thirdPoint.x)/3, (firstPoint.y + secondPoint.y + thirdPoint.y)/3);
     }
 
     @Override
@@ -49,6 +54,7 @@ public class Triangle extends AbstractShape {
         if (thirdPoint != null) {
             g2.drawLine(thirdPoint.x, thirdPoint.y, secondPoint.x, secondPoint.y);
             g2.drawLine(firstPoint.x, firstPoint.y, thirdPoint.x, thirdPoint.y);
+            super.draw(canvas);
         }
     }
 

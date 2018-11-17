@@ -17,4 +17,8 @@ public final class STATIC_VARS {
 
     public static final String PANEL_BUTTON_NAME_DELETE = "Delete";
     public static final Color PANEL_BACKGROUND_COLOR = Color.WHITE;
+    public static final int CENTERS_RADIUS = 5;
+    public static final Color CENTERS_COLOR = Color.GREEN;
+    public static final int DEFAULT_THICKNESS = 1;
+    public static final int CENTER_THICKNESS = 2;
 }

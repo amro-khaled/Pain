@@ -20,6 +20,7 @@ public class Line extends AbstractShape {
     @Override
     public void setPosition(Point position) {
         this.secondPoint = (Point) position.clone();
+        buildCenters();
     }
 
     @Override
@@ -30,6 +31,11 @@ public class Line extends AbstractShape {
     @Override
     public void setProperties(Map<String, Double> properties) {
 
+    }
+
+    private void buildCenters(){
+        centers = new Center();
+        centers.add((firstPoint.x + secondPoint.x)/2, (firstPoint.y + secondPoint.y)/2);
     }
 
     @Override
@@ -43,6 +49,7 @@ public class Line extends AbstractShape {
         Graphics2D g2 = (Graphics2D) canvas;
         g2.setColor(isSelected()? STATIC_VARS.SELECTION_COLOR : getColor());
         g2.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y);
+        super.draw(canvas);
     }
 
     @Override

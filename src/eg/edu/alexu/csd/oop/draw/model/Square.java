@@ -9,16 +9,17 @@ public class Square extends Rectangle {
 
     @Override
     public void setPosition(Point position) {
-        if(Math.abs(center.x - position.x) > Math.abs(center.y - position.y)){
-            height = width = center.x - position.x;
-            if((center.x - position.x < 0) ^ (center.y - position.y < 0)) {
+        if(Math.abs(centerPoint.x - position.x) > Math.abs(centerPoint.y - position.y)){
+            height = width = centerPoint.x - position.x;
+            if((centerPoint.x - position.x < 0) ^ (centerPoint.y - position.y < 0)) {
                 height *= -1;
             }
         }else{
-            height = width = center.y - position.y;
-            if((center.x - position.x < 0) ^ (center.y - position.y < 0)) {
+            height = width = centerPoint.y - position.y;
+            if((centerPoint.x - position.x < 0) ^ (centerPoint.y - position.y < 0)) {
                 width *= -1;
             }
         }
+        buildCenters();
     }
 }

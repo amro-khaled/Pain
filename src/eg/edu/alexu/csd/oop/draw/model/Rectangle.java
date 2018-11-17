@@ -6,18 +6,19 @@ import java.awt.*;
 import java.util.Map;
 
 public class Rectangle extends AbstractShape {
-    Point center;
+    Point centerPoint;
     int width, height;
 
     public Rectangle(Point position) {
         super();
-        center = (Point) position.clone();
+        centerPoint = (Point) position.clone();
     }
 
     @Override
     public void setPosition(Point position) {
-        width = center.x - position.x;
-        height = center.y - position.y;
+        width = centerPoint.x - position.x;
+        height = centerPoint.y - position.y;
+        buildCenters();
     }
 
     @Override
@@ -38,8 +39,10 @@ public class Rectangle extends AbstractShape {
     @Override
     public void draw(Graphics canvas) {
         Graphics2D g2 = (Graphics2D) canvas;
+        g2.setStroke(new BasicStroke(getThickness()));
         g2.setColor(isSelected()? STATIC_VARS.SELECTION_COLOR : getColor());
-        g2.drawRect(Math.min(center.x, center.x - width), Math.min(center.y, center.y - height), Math.abs(width), Math.abs(height));
+        g2.drawRect(Math.min(centerPoint.x, centerPoint.x - width), Math.min(centerPoint.y, centerPoint.y - height), Math.abs(width), Math.abs(height));
+        super.draw(canvas);
     }
 
     @Override
@@ -47,10 +50,14 @@ public class Rectangle extends AbstractShape {
         return this;
     }
 
+    protected void buildCenters() {
+        centers = new Center();
+        centers.add(Math.min(centerPoint.x, centerPoint.x - width) + Math.abs(width)/2, Math.min(centerPoint.y, centerPoint.y - height) + Math.abs(height)/2);
+    }
     @Override
     public boolean isOnBoarder(Point point) {
-        int leftX = Math.min(center.x, center.x - width);
-        int topY = Math.min(center.y, center.y - height);
+        int leftX = Math.min(centerPoint.x, centerPoint.x - width);
+        int topY = Math.min(centerPoint.y, centerPoint.y - height);
         if((Math.abs(point.x - leftX) <= STATIC_VARS.SELECTION_PRECISION || Math.abs(point.x - (leftX + Math.abs(width))) <= STATIC_VARS.SELECTION_PRECISION)
                 && point.y >= topY && point.y <= topY + Math.abs(height))return true;
         if((Math.abs(point.y - topY) <= STATIC_VARS.SELECTION_PRECISION || Math.abs(point.y - (topY + Math.abs(height))) <= STATIC_VARS.SELECTION_PRECISION)

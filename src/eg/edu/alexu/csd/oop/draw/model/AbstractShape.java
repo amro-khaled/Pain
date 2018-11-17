@@ -1,7 +1,7 @@
 package eg.edu.alexu.csd.oop.draw.model;
 
 import eg.edu.alexu.csd.oop.draw.Shape;
-import jdk.nashorn.internal.objects.annotations.Getter;
+import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
 import java.awt.*;
 import java.util.Map;
@@ -12,8 +12,12 @@ public abstract class AbstractShape implements Shape {
     private Color fillColor;
     protected boolean completed;
     private boolean selected;
+    protected Center centers;
+
+    private int thickness;
 
     AbstractShape(){
+        thickness = STATIC_VARS.DEFAULT_THICKNESS;
         color = Color.BLACK;
         fillColor = Color.WHITE;
         selected = false;
@@ -55,7 +59,10 @@ public abstract class AbstractShape implements Shape {
     }
 
     @Override
-    public abstract void draw(Graphics canvas);
+    public void draw(Graphics canvas){
+        if(isSelected())
+            centers.draw(canvas);
+    }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -86,5 +93,13 @@ public abstract class AbstractShape implements Shape {
 
     public final void unSelect() {
         selected = false;
+    }
+
+    public final int getThickness() {
+        return thickness;
+    }
+
+    public final void setThickness(int thickness) {
+        this.thickness = thickness;
     }
 }
