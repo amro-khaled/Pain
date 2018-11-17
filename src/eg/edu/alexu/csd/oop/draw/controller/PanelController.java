@@ -35,7 +35,8 @@ public class PanelController {
     public Shape getShape(){
         return curShape;
     }
-    
+    boolean movingMode = false;
+    Circle movingCenter = null;
     public void setShape(ShapeButton sb){
         curButton = sb;
     }
@@ -52,6 +53,17 @@ public class PanelController {
 
     public void selectShapes(Point point) {
 
+    }
+
+    public boolean isMovingMode() {
+        return movingMode;
+    }
+
+    public Circle getMovingCenter() {
+        return movingCenter;
+    }
+    public void setMovingCenter(Circle movingCenter) {
+        this.movingCenter = movingCenter;
     }
 
     public enum ShapeButton{

@@ -11,6 +11,7 @@ public class Ellipse extends AbstractShape {
     protected Point centerPoint;
 
     public Ellipse(Point centerPoint) {
+        super();
         setCompleted(false);
         this.centerPoint = centerPoint;
     }
@@ -23,8 +24,8 @@ public class Ellipse extends AbstractShape {
     }
 
     protected void buildCenters() {
-        centers = new Center();
-        centers.add(centerPoint.x, centerPoint.y);
+        if(centers == null) centers = new Center();
+        centers.setCenterPoint(centerPoint.x, centerPoint.y);
     }
     @Override
     public Point getPosition() {
@@ -60,6 +61,13 @@ public class Ellipse extends AbstractShape {
         double q = Math.pow((c.getX() - centerPoint.x), 2) / Math.pow(Math.max(width, 1), 2)
                 + Math.pow((c.getY() - centerPoint.y), 2) / Math.pow(Math.max(height, 1), 2);
         return Math.abs(q - 1) <= STATIC_VARS.ELLIPSE_SELECTION_PRECISION;
+    }
+
+    @Override
+    public void moveCenter(int deltaX, int deltaY) {
+        centerPoint.x += deltaX;
+        centerPoint.y += deltaY;
+        buildCenters();
     }
 
 }

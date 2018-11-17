@@ -3,11 +3,15 @@ package eg.edu.alexu.csd.oop.draw.controller;
 import eg.edu.alexu.csd.oop.draw.DrawingEngine;
 import eg.edu.alexu.csd.oop.draw.Shape;
 import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
+import eg.edu.alexu.csd.oop.draw.model.Center;
+import eg.edu.alexu.csd.oop.draw.model.Circle;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Engine implements DrawingEngine {
 
@@ -109,5 +113,23 @@ public class Engine implements DrawingEngine {
     }
     public synchronized static Engine getInstance(){
         return instance == null? instance = new Engine() : instance;
+    }
+
+    public Circle getMovingCenter(Point point){
+        for(Circle circle : shapes.stream().filter(AbstractShape::isSelected).map(k -> k.getCenters().getCircle()).collect(Collectors.toList())) {
+            if(circle.fallInside(point)){
+                return circle;
+            }
+        }
+        return null;
+    }
+
+    public void moveSelectedShapes(Point point, Circle circle) {
+        if(circle == null) return;
+        int deltaX = point.x - circle.getCenterPoint().x;
+        int deltaY = point.y - circle.getCenterPoint().y;
+        for(AbstractShape shape : shapes.stream().filter(AbstractShape::isSelected).collect(Collectors.toList())){
+            shape.moveCenter(deltaX, deltaY);
+        }
     }
 }

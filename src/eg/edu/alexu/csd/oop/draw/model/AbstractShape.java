@@ -102,4 +102,11 @@ public abstract class AbstractShape implements Shape {
     public final void setThickness(int thickness) {
         this.thickness = thickness;
     }
+
+    public Center getCenters() {
+        return centers;
+    }
+
+    public abstract void moveCenter(int deltaX, int deltaY);
+
 }

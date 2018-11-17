@@ -1,5 +1,7 @@
 package eg.edu.alexu.csd.oop.draw.model;
 
+import eg.edu.alexu.csd.oop.draw.utils.CalculationHelper;
+
 import java.awt.*;
 import java.util.Map;
 
@@ -38,5 +40,18 @@ public class Circle extends Ellipse {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return null;
+    }
+
+    public boolean fallInside(Point point) {
+        return Math.abs(CalculationHelper.dist(point, centerPoint)) <= width;
+    }
+
+
+    public Point getCenterPoint() {
+        return centerPoint;
+    }
+
+    public void setCenter(int x, int y) {
+        this.centerPoint = new Point(x, y);
     }
 }

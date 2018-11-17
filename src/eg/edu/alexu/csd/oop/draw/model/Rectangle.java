@@ -10,7 +10,6 @@ public class Rectangle extends AbstractShape {
     int width, height;
 
     public Rectangle(Point position) {
-        super();
         centerPoint = (Point) position.clone();
     }
 
@@ -51,8 +50,8 @@ public class Rectangle extends AbstractShape {
     }
 
     protected void buildCenters() {
-        centers = new Center();
-        centers.add(Math.min(centerPoint.x, centerPoint.x - width) + Math.abs(width)/2, Math.min(centerPoint.y, centerPoint.y - height) + Math.abs(height)/2);
+        if(centers == null) centers = new Center();
+        centers.setCenterPoint(Math.min(centerPoint.x, centerPoint.x - width) + Math.abs(width)/2, Math.min(centerPoint.y, centerPoint.y - height) + Math.abs(height)/2);
     }
     @Override
     public boolean isOnBoarder(Point point) {
@@ -63,5 +62,12 @@ public class Rectangle extends AbstractShape {
         if((Math.abs(point.y - topY) <= STATIC_VARS.SELECTION_PRECISION || Math.abs(point.y - (topY + Math.abs(height))) <= STATIC_VARS.SELECTION_PRECISION)
                 && point.x >= leftX && point.x <= leftX + Math.abs(width))return true;
         return false;
+    }
+
+    @Override
+    public void moveCenter(int deltaX, int deltaY) {
+        centerPoint.x += deltaX;
+        centerPoint.y += deltaY;
+        buildCenters();
     }
 }

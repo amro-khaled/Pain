@@ -33,15 +33,21 @@ public class PaintPanelMouseListener implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(panelController.getShape() != null && !((AbstractShape) panelController.getShape()).isCompleted()) return;
+        if(panelController.getShape() != null && !((AbstractShape) panelController.getShape()).isCompleted()){
+            return;
+        }
         Shape shape = panelController.createAndGetShape(e.getPoint());
-        if (shape == null) return;
+        if (shape == null) {
+            panelController.setMovingCenter(engine.getMovingCenter(e.getPoint()));
+            return;
+        }
         engine.addShape(shape);
         paintPanel.repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        panelController.setMovingCenter(null);
         panelController.release();
         paintPanel.repaint();
     }

@@ -34,8 +34,8 @@ public class Line extends AbstractShape {
     }
 
     private void buildCenters(){
-        centers = new Center();
-        centers.add((firstPoint.x + secondPoint.x)/2, (firstPoint.y + secondPoint.y)/2);
+        if(centers == null) centers = new Center();
+        centers.setCenterPoint((firstPoint.x + secondPoint.x)/2, (firstPoint.y + secondPoint.y)/2);
     }
 
     @Override
@@ -62,6 +62,15 @@ public class Line extends AbstractShape {
         if(CalculationHelper.isSameLine(firstPoint, point, secondPoint))
             return true;
         return false;
+    }
+
+    @Override
+    public void moveCenter(int deltaX, int deltaY) {
+        firstPoint.x += deltaX;
+        firstPoint.y += deltaY;
+        secondPoint.x += deltaX;
+        secondPoint.y += deltaY;
+        buildCenters();
     }
 
 

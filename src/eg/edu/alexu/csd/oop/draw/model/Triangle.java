@@ -12,6 +12,7 @@ public class Triangle extends AbstractShape {
 
 
     public Triangle(Point firstPoint) {
+        super();
         this.firstPoint = firstPoint;
         readyForThirdPoint = false;
     }
@@ -26,8 +27,8 @@ public class Triangle extends AbstractShape {
         }
     }
     private void buildCenters(){
-        centers = new Center();
-        centers.add((firstPoint.x + secondPoint.x + thirdPoint.x)/3, (firstPoint.y + secondPoint.y + thirdPoint.y)/3);
+        if(centers == null) centers = new Center();
+        centers.setCenterPoint((firstPoint.x + secondPoint.x + thirdPoint.x)/3, (firstPoint.y + secondPoint.y + thirdPoint.y)/3);
     }
 
     @Override
@@ -77,6 +78,17 @@ public class Triangle extends AbstractShape {
             select();
         }
         readyForThirdPoint = true;
+    }
+
+    @Override
+    public void moveCenter(int deltaX, int deltaY) {
+        firstPoint.x += deltaX;
+        firstPoint.y += deltaY;
+        secondPoint.x += deltaX;
+        secondPoint.y += deltaY;
+        thirdPoint.x += deltaX;
+        thirdPoint.y += deltaY;
+        buildCenters();
     }
 
 }
