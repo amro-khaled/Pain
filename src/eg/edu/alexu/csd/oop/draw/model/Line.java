@@ -16,6 +16,13 @@ public class Line extends AbstractShape {
         this.firstPoint = (Point) firstPoint.clone();
     }
 
+    public Line(Point firstPoint, Point secondPoint, Color color, Color fillColor, int thickness, int UUID, int scale) {
+        super(color, fillColor, thickness, UUID, scale);
+        this.firstPoint = (Point) firstPoint.clone();
+        this.secondPoint = (Point) secondPoint.clone();
+        buildCenters();
+    }
+
     @Override
     public void setPosition(Point position) {
         this.secondPoint = (Point) position.clone();
@@ -62,7 +69,7 @@ public class Line extends AbstractShape {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return this;
+        return new Line(firstPoint, secondPoint, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
     }
 
     @Override

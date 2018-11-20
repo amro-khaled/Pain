@@ -11,6 +11,10 @@ public class Circle extends Ellipse {
         super(centerPoint);
     }
 
+    protected Circle(Point centerPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
+        super(centerPoint, width, height, color, fillColor, thickness, UUID, scale);
+    }
+
     @Override
     public void setPosition(Point position) {
         int radius = (int) Math.sqrt(Math.pow(centerPoint.x - position.x, 2) + Math.pow(centerPoint.y - position.y, 2));
@@ -40,7 +44,7 @@ public class Circle extends Ellipse {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return null;
+        return new Circle(this.centerPoint, this.width, this.height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
     }
 
     public boolean fallInside(Point point) {

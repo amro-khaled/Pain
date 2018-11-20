@@ -9,9 +9,16 @@ public class Rectangle extends AbstractShape {
     Point headPoint;
     int scaledWidth, scaledHeight;
 
-    public Rectangle(Point position) {
+    public Rectangle(Point headPoint) {
         super();
-        headPoint = (Point) position.clone();
+        this.headPoint = (Point) headPoint.clone();
+    }
+
+    public Rectangle(Point headPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
+        super(color, fillColor, thickness, UUID, scale);
+        this.headPoint = (Point) headPoint.clone();
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -66,7 +73,7 @@ public class Rectangle extends AbstractShape {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return this;
+        return new Rectangle(headPoint, width, height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
     }
 
     protected void buildCenters() {

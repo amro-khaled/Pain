@@ -7,6 +7,15 @@ public class Square extends Rectangle {
         super(position);
     }
 
+    public Square(Point headPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
+        super(headPoint, width, height, color, fillColor, thickness, UUID, scale);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Square(headPoint, width, height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
+    }
+
     @Override
     public void setPosition(Point position) {
         if(Math.abs(headPoint.x - position.x) > Math.abs(headPoint.y - position.y)){

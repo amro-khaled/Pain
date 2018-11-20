@@ -1,6 +1,7 @@
 package eg.edu.alexu.csd.oop.draw.controller;
 
 import eg.edu.alexu.csd.oop.draw.Shape;
+import eg.edu.alexu.csd.oop.draw.command.ActionCommand;
 import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
 import eg.edu.alexu.csd.oop.draw.model.Line;
 
@@ -41,12 +42,14 @@ public class PaintPanelMouseListener implements MouseListener {
             panelController.setMovingCenter(engine.getMovingCenter(e.getPoint()));
             return;
         }
+        engine.addAction(new ActionCommand(()-> engine.removeShape(shape), ()-> engine.addShape(shape)));
         engine.addShape(shape);
         paintPanel.repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        engine.actionMovedShapes();
         panelController.setMovingCenter(null);
         panelController.release();
         paintPanel.repaint();

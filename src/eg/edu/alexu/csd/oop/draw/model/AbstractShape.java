@@ -1,6 +1,8 @@
 package eg.edu.alexu.csd.oop.draw.model;
 
 import eg.edu.alexu.csd.oop.draw.Shape;
+import eg.edu.alexu.csd.oop.draw.controller.Engine;
+import eg.edu.alexu.csd.oop.draw.controller.UUIDGenerator;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
 import java.awt.*;
@@ -14,10 +16,22 @@ public abstract class AbstractShape implements Shape {
     protected Center centers;
     protected int scale;
     private int thickness;
+    private final int UUID; // Universal unique ID
 
     protected int width;
     protected int height;
     protected Point centerPoint;
+
+    public AbstractShape(Color color, Color fillColor, int thickness, int UUID, int scale) {
+        this.color = color;
+        this.fillColor = fillColor;
+        this.thickness = thickness;
+        this.scale = STATIC_VARS.INIT_SLIDER_VAL;
+        this.selected = false;
+        this.completed = false;
+        this.UUID = UUID;
+        this.scale = scale;
+    }
 
     public int getWidth() {
         return width;
@@ -50,10 +64,11 @@ public abstract class AbstractShape implements Shape {
     AbstractShape() {
         scale = STATIC_VARS.INIT_SLIDER_VAL;
         thickness = STATIC_VARS.DEFAULT_THICKNESS;
-        color = Color.BLACK;
+        color = Engine.getInstance().getColor();
         fillColor = Color.WHITE;
         selected = false;
         completed = false;
+        UUID = UUIDGenerator.getInstance().generate();
     }
 
     @Override
@@ -163,4 +178,15 @@ public abstract class AbstractShape implements Shape {
             this.thirdPoint = thirdPoint;
     }
 
+    protected int getUUID() {
+        return this.UUID;
+    }
+    @Override
+    public boolean equals(Object o){
+        return o instanceof AbstractShape && ((AbstractShape) o).UUID == this.UUID;
+    }
+
+    public final void clearScale(){
+        this.scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+    }
 }

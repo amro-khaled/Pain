@@ -67,7 +67,7 @@ public class PaintWindow extends JFrame {
 
     private JPanel initButtons() {
         JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(7, 1));
+        buttons.setLayout(new GridLayout(9, 1));
         for (PanelController.ShapeButton shape : PanelController.ShapeButton.values()) {
             JButton btn = new JButton(shape.toString());
             buttons.add(btn);
@@ -77,9 +77,28 @@ public class PaintWindow extends JFrame {
             });
         }
         buttons.add(initDelButton());
+        buttons.add(initUndoButton());
+        buttons.add(initRedoButton());
         return buttons;
     }
 
+    private JButton initUndoButton() {
+        JButton undoBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_UNDO);
+        undoBtn.addActionListener(e -> {
+            engine.undo();
+            repaint();
+        });
+        return undoBtn;
+    }
+
+    private JButton initRedoButton() {
+        JButton redoBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_REDO);
+        redoBtn.addActionListener(e -> {
+            engine.redo();
+            repaint();
+        });
+        return redoBtn;
+    }
     private JButton initDelButton() {
         JButton deleteBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_DELETE);
         deleteBtn.addActionListener(e -> {

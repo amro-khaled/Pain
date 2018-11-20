@@ -11,6 +11,13 @@ public class Ellipse extends AbstractShape {
         this.centerPoint = centerPoint;
     }
 
+    protected Ellipse(Point centerPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
+        super(color, fillColor, thickness, UUID, scale);
+        this.centerPoint = centerPoint;
+        this.width = width;
+        this.height = height;
+    }
+
     @Override
     public void setPosition(Point position) {
         width = Math.abs(centerPoint.x - position.x);
@@ -57,7 +64,7 @@ public class Ellipse extends AbstractShape {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return null;
+        return new Ellipse(this.centerPoint, this.width, this.height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
     }
 
     @Override

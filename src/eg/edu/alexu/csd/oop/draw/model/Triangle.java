@@ -16,6 +16,14 @@ public class Triangle extends AbstractShape {
         readyForThirdPoint = false;
     }
 
+    public Triangle(Point firstPoint, Point secondPoint, Point thirdPoint, Color color, Color fillColor, int thickness, int UUID, int scale) {
+        super(color, fillColor, thickness, UUID, scale);
+        this.firstPoint = firstPoint;
+        this.secondPoint = secondPoint;
+        this.thirdPoint = thirdPoint;
+        buildCenters();
+    }
+
     @Override
     public void setPosition(Point position) {
         if (!readyForThirdPoint) {
@@ -71,7 +79,7 @@ public class Triangle extends AbstractShape {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return null;
+        return new Triangle(firstPoint, secondPoint, thirdPoint, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
     }
 
     @Override

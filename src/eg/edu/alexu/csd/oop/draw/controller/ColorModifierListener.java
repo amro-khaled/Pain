@@ -23,7 +23,11 @@ public class ColorModifierListener implements ChangeListener {
     @Override
     public void stateChanged(ChangeEvent e) {
         // TODO Auto-generated method stub
-        engine.setColor(chooser.getColor());
+        try {
+            engine.setColor(chooser.getColor());
+        } catch (CloneNotSupportedException e1) {
+            e1.printStackTrace();
+        }
         paintWindow.repaint();
     }
 
