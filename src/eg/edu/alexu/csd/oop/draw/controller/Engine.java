@@ -204,7 +204,7 @@ public class Engine implements DrawingEngine {
     }
 
     public void resizeSelectedShapes() {
-        shapesgit .forEach(AbstractShape::resize);
+        shapes.forEach(AbstractShape::resize);
     }
 
     public List<AbstractShape> getSelectedShapes() {
