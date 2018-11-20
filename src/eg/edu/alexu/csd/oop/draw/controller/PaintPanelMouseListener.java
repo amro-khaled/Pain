@@ -49,7 +49,7 @@ public class PaintPanelMouseListener implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        engine.actionMovedShapes();
+//        engine.actionMovedShapes();
         panelController.setMovingCenter(null);
         panelController.release();
         paintPanel.repaint();

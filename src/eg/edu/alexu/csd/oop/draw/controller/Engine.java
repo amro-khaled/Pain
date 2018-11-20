@@ -26,7 +26,6 @@ public class Engine implements DrawingEngine {
     private Color color;
     private Stack<ActionCommand> redoStack;
     private Stack<ActionCommand> undoStack;
-    private List<AbstractShape> capturedShapes;
     private Map<String, Class> loadedClasses;
 
     private Engine() {
@@ -181,25 +180,12 @@ public class Engine implements DrawingEngine {
     public Circle getMovingCenter(Point point) {
         for (Circle circle : shapes.stream().filter(AbstractShape::isSelected).map(k -> k.getCenters().getCircle()).collect(Collectors.toList())) {
             if (circle.fallInside(point)) {
-                try {
-                    captureSelectedShapes();
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                }
                 return circle;
             }
         }
         return null;
     }
 
-    private void captureSelectedShapes() throws CloneNotSupportedException {
-        if(capturedShapes != null)return;
-        List<AbstractShape> selectedShapes = getSelectedShapes();
-        capturedShapes = new ArrayList<>();
-        for (AbstractShape selectedShape : selectedShapes) {
-            capturedShapes.add((AbstractShape) selectedShape.clone());
-        }
-    }
 
     public void moveSelectedShapes(Point point, Circle circle) {
         if (circle == null) return;
@@ -218,35 +204,7 @@ public class Engine implements DrawingEngine {
     }
 
     public void resizeSelectedShapes() {
-        List<AbstractShape> resizedShapes = new ArrayList<>();
-        List<AbstractShape> originalShapes = shapes.stream()
-                .filter(AbstractShape::isSelected)
-                .filter(k -> k.getScale() != STATIC_VARS.ORIGINAL_SHAPE_SCALE)
-                .collect(Collectors.toList());
-        if(originalShapes.isEmpty())return;
-
-        for(AbstractShape shape : originalShapes) {
-            try {
-                AbstractShape clonedShape = (AbstractShape) shape.clone();
-                clonedShape.setScale(shape.getScale());
-                shape.clearScale();
-                resizedShapes.add(clonedShape);
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        }
-        shapes.removeAll(originalShapes);
-        resizedShapes.forEach(AbstractShape::resize);
-        shapes.addAll(resizedShapes);
-        addAction(new ActionCommand(
-                ()->{
-                    shapes.removeAll(resizedShapes);
-                    shapes.addAll(originalShapes);
-                },
-                ()->{
-                    shapes.removeAll(originalShapes);
-                    shapes.addAll(resizedShapes);
-                }));
+        shapesgit .forEach(AbstractShape::resize);
     }
 
     public List<AbstractShape> getSelectedShapes() {
@@ -260,10 +218,6 @@ public class Engine implements DrawingEngine {
 
     public Color getColor() {
         return color;
-    }
-
-    public void actionMovedShapes() {
-        capturedShapes = null;
     }
 
     public String loadClasses(File file) {
