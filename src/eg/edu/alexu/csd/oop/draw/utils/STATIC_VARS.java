@@ -9,7 +9,7 @@ public final class STATIC_VARS {
     public static final String PANEL_BUTTON_NAME_CIRCLE = "Circle";
     public static final String PANEL_BUTTON_NAME_ELLIPSE = "Ellipse";
     public static final String PANEL_BUTTON_NAME_TRIANGLE = "Triangle";
-    public static final String PANEL_BUTTON_NAME_RECTANGLE = "Shit";
+    public static final String PANEL_BUTTON_NAME_RECTANGLE = "Rectangle";
     public static final String PANEL_BUTTON_NAME_SQUARE = "Square";
     public static final String PANEL_BUTTON_NAME_DELETE = "Delete";
     public static final String PANEL_BUTTON_NAME_UNDO = "Undo";
