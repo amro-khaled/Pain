@@ -249,7 +249,7 @@ public class Engine implements DrawingEngine {
         URL[] my = { name };
         URLClassLoader classloader = new URLClassLoader(my);
         try {
-            Class myClass = classloader.loadClass(nameOfClass);
+            Class myClass = classloader.loadClass( STATIC_VARS.PACKAGE_NAME + nameOfClass);
             if (loadedClasses.keySet().contains(nameOfClass)) {
                 System.out.println("u already loaded such a class");
                 return null;
