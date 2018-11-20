@@ -4,8 +4,9 @@ package eg.edu.alexu.csd.oop.draw.model;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Center {
+public class Center implements Serializable {
     Circle circle;
     Center(){
         circle = new Circle(new Point(-200, -200));

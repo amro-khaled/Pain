@@ -26,4 +26,6 @@ public final class STATIC_VARS {
     public static final int INIT_SLIDER_VAL = 100;
     public static final int MAX_SLIDER_VAL = 200;
     public static final int ORIGINAL_SHAPE_SCALE = 100;
+    public static final String PANEL_BUTTON_NAME_SAVE = "SAVE";
+    public static final String PANEL_BUTTON_NAME_LOAD = "LOAD";
 }

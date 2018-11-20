@@ -7,9 +7,6 @@ import java.awt.*;
 import java.util.Map;
 
 public class Line extends AbstractShape {
-    private Point firstPoint;
-    private Point secondPoint;
-
 
     public Line(Point firstPoint) {
         super();

@@ -67,7 +67,7 @@ public class PaintWindow extends JFrame {
 
     private JPanel initButtons() {
         JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(9, 1));
+        buttons.setLayout(new GridLayout(11, 1));
         for (PanelController.ShapeButton shape : PanelController.ShapeButton.values()) {
             JButton btn = new JButton(shape.toString());
             buttons.add(btn);
@@ -79,6 +79,8 @@ public class PaintWindow extends JFrame {
         buttons.add(initDelButton());
         buttons.add(initUndoButton());
         buttons.add(initRedoButton());
+        buttons.add(initSaveButton());
+        buttons.add(initLoadButton());
         return buttons;
     }
 
@@ -107,6 +109,35 @@ public class PaintWindow extends JFrame {
         });
         return deleteBtn;
     }
+
+    private JButton initSaveButton() {
+        JButton saveBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_SAVE);
+        saveBtn.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int returnVal = chooser.showSaveDialog(getParent());
+            if(returnVal == JFileChooser.APPROVE_OPTION){
+                engine.save(chooser.getSelectedFile().getAbsolutePath());
+            }
+        });
+        return saveBtn;
+    }
+
+    private JButton initLoadButton() {
+        JButton loadBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_LOAD);
+        loadBtn.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            int returnVal = chooser.showOpenDialog(getParent());
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                engine.load(chooser.getSelectedFile().getAbsolutePath());
+            }
+            repaint();
+        });
+        return loadBtn;
+    }
+
+
 
     private void initColorChooser(JPanel panel) {
         JColorChooser chooser = new JColorChooser();

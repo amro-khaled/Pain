@@ -116,6 +116,7 @@ public class Triangle extends AbstractShape {
     }
 
     private void buildOffset() {
+        buildCenters();
         Point center = centers.circle.centerPoint;
         double ratio = (double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
         firstOffset = new Point();

@@ -6,9 +6,10 @@ import eg.edu.alexu.csd.oop.draw.controller.UUIDGenerator;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Map;
 
-public abstract class AbstractShape implements Shape {
+public abstract class AbstractShape implements Shape, Serializable {
     private Color color;
     private Color fillColor;
     protected boolean completed;

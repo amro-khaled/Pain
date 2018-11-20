@@ -10,6 +10,7 @@ import eg.edu.alexu.csd.oop.draw.model.Line;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -90,13 +91,41 @@ public class Engine implements DrawingEngine {
 
     @Override
     public void save(String path) {
-
+        try
+        {
+            FileOutputStream fos = new FileOutputStream(path);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeInt(shapes.size());
+            for(AbstractShape i : shapes)
+                oos.writeObject(i);
+            oos.close();
+            fos.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void load(String path) {
-
+        try
+        {
+            FileInputStream fis = new FileInputStream(path);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            int n = ois.readInt();
+            while(n-- > 0){
+                shapes.add((AbstractShape) ois.readObject());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
+
 
     public void selectShapes(Point point) {
         for (AbstractShape shape : shapes) {
@@ -230,20 +259,6 @@ public class Engine implements DrawingEngine {
     }
 
     public void actionMovedShapes() {
-        if(capturedShapes == null) return;
-        List<AbstractShape> selectedShapes = getSelectedShapes();
-
-        List<AbstractShape> capturedShapesClone = new ArrayList<>(capturedShapes);
-        addAction(new ActionCommand(
-                ()->{
-                    shapes.removeAll(selectedShapes);
-                    shapes.addAll(capturedShapesClone);
-                },
-                ()->{
-                    shapes.removeAll(capturedShapesClone);
-                    shapes.addAll(selectedShapes);
-                })
-        );
         capturedShapes = null;
     }
 }
