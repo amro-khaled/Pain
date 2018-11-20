@@ -7,7 +7,6 @@ import java.awt.*;
 import java.util.Map;
 
 public class Triangle extends AbstractShape {
-    private Point firstOffset, secondOffset, thirdOffset;
     public boolean readyForThirdPoint;
 
     public Triangle(Point firstPoint) {
@@ -66,11 +65,10 @@ public class Triangle extends AbstractShape {
             g2.setStroke(new BasicStroke(getThickness()));
         }
         if (thirdPoint != null) {
-            buildOffset();
             Point center = centers.circle.centerPoint;
-            g2.drawLine(center.x - firstOffset.x, center.y - firstOffset.y, center.x - secondOffset.x, center.y - secondOffset.y);
-            g2.drawLine(center.x - thirdOffset.x, center.y - thirdOffset.y, center.x - secondOffset.x, center.y - secondOffset.y);
-            g2.drawLine(center.x - firstOffset.x, center.y - firstOffset.y, center.x - thirdOffset.x, center.y - thirdOffset.y);
+            g2.drawLine(getScaledPoint(center.x, firstPoint.x), getScaledPoint(center.y, firstPoint.y), getScaledPoint(center.x, secondPoint.x), getScaledPoint(center.y, secondPoint.y));
+            g2.drawLine(getScaledPoint(center.x, thirdPoint.x), getScaledPoint(center.y, thirdPoint.y), getScaledPoint(center.x, secondPoint.x), getScaledPoint(center.y, secondPoint.y));
+            g2.drawLine(getScaledPoint(center.x, firstPoint.x), getScaledPoint(center.y, firstPoint.y), getScaledPoint(center.x, thirdPoint.x), getScaledPoint(center.y, thirdPoint.y));
             super.draw(canvas);
         } else {
             g2.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y);
@@ -115,28 +113,18 @@ public class Triangle extends AbstractShape {
         scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
     }
 
-    private void buildOffset() {
-        buildCenters();
-        Point center = centers.circle.centerPoint;
-        double ratio = (double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
-        firstOffset = new Point();
-        secondOffset = new Point();
-        thirdOffset = new Point();
-        firstOffset.x = (int) ((center.x - firstPoint.x) * ratio);
-        firstOffset.y = (int) ((center.y - firstPoint.y) * ratio);
-        secondOffset.x = (int) ((center.x - secondPoint.x) * ratio);
-        secondOffset.y = (int) ((center.y - secondPoint.y) * ratio);
-        thirdOffset.x = (int) ((center.x - thirdPoint.x) * ratio);
-        thirdOffset.y = (int) ((center.y - thirdPoint.y) * ratio);
-    }
-
     private void buildPoints() {
         Point center = centers.circle.centerPoint;
-        firstPoint.x = center.x - firstOffset.x;
-        firstPoint.y = center.y - firstOffset.y;
-        secondPoint.x = center.x - secondOffset.x;
-        secondPoint.y = center.y - secondOffset.y;
-        thirdPoint.x = center.x - thirdOffset.x;
-        thirdPoint.y = center.y - thirdOffset.y;
+        firstPoint.x = getScaledPoint(center.x, firstPoint.x);
+        firstPoint.y = getScaledPoint(center.y, firstPoint.y);
+        secondPoint.x = getScaledPoint(center.x, secondPoint.x);
+        secondPoint.y = getScaledPoint(center.y, secondPoint.y);
+        thirdPoint.x = getScaledPoint(center.x, thirdPoint.x);
+        thirdPoint.y = getScaledPoint(center.y, thirdPoint.y);
+    }
+
+    public int getScaledPoint(int centerVal, int pointVal) {
+        double ratio =  ((double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE);
+        return centerVal - (int)((centerVal - pointVal) * ratio);
     }
 }

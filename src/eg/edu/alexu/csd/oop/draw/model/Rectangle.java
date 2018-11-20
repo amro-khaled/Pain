@@ -6,25 +6,28 @@ import java.awt.*;
 import java.util.Map;
 
 public class Rectangle extends AbstractShape {
-    Point headPoint;
-    int scaledWidth, scaledHeight;
 
     public Rectangle(Point headPoint) {
         super();
-        this.headPoint = (Point) headPoint.clone();
+        this.firstPoint = (Point) headPoint.clone();
+        centerPoint = firstPoint;
     }
 
-    public Rectangle(Point headPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
+    public Rectangle(Point firstPoint, Point secondPoint, Point center, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
         super(color, fillColor, thickness, UUID, scale);
-        this.headPoint = (Point) headPoint.clone();
+        this.firstPoint = (Point) firstPoint.clone();
+        this.secondPoint = secondPoint;
+        this.centerPoint = center;
         this.width = width;
         this.height = height;
     }
 
     @Override
     public void setPosition(Point position) {
-        scaledWidth = width = headPoint.x - position.x;
-        scaledHeight = height = headPoint.y - position.y;
+        this.secondPoint = position;
+        width = firstPoint.x - secondPoint.x;
+        height = firstPoint.y - secondPoint.y;
+        centerPoint = new Point((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y)/2);
         buildCenters();
     }
 
@@ -53,41 +56,30 @@ public class Rectangle extends AbstractShape {
         } else {
             g2.setStroke(new BasicStroke(getThickness()));
         }
+        if(centerPoint == null)
+            centerPoint = new Point((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y)/2);
 
-        scaledWidth = (int) (width * ((double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE));
-        scaledHeight = (int) (height * ((double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE));
-        if (isCompleted()) {
-            centerPoint = centers.circle.centerPoint;
-            headPoint.x = (headPoint.x > centerPoint.x) ? Math.max(centerPoint.x + scaledWidth / 2, centerPoint.x - scaledWidth / 2)
-                    : Math.min(centerPoint.x + scaledWidth / 2, centerPoint.x - scaledWidth / 2);
-            headPoint.y = (headPoint.y > centerPoint.y) ? Math.max(centerPoint.y + scaledHeight / 2, centerPoint.y - scaledHeight / 2)
-                    : Math.min(centerPoint.y + scaledHeight / 2, centerPoint.y - scaledHeight / 2);
-        }
-
-        g2.drawRect(Math.min(headPoint.x, headPoint.x - scaledWidth)
-                , Math.min(headPoint.y, headPoint.y - scaledHeight)
-                , Math.abs(scaledWidth)
-                , Math.abs(scaledHeight));
+        g2.drawRect(Math.min(centerPoint.x + getScaledWidth()/2, centerPoint.x - getScaledWidth()/2)
+                , Math.min(centerPoint.y + getScaledHeight()/2, centerPoint.y - getScaledHeight()/2)
+                , Math.abs(getScaledWidth())
+                , Math.abs(getScaledHeight()));
         super.draw(canvas);
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new Rectangle(headPoint, width, height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
+        return new Rectangle(firstPoint, secondPoint, centerPoint, width, height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
     }
 
     protected void buildCenters() {
         if (centers == null) centers = new Center();
-        if (centerPoint == null)
-            centers.setCenterPoint(Math.min(headPoint.x, headPoint.x - width) + Math.abs(width) / 2, Math.min(headPoint.y, headPoint.y - height) + Math.abs(height) / 2);
-        else
-            centers.setCenterPoint(centerPoint.x, centerPoint.y);
+        centers.setCenterPoint(centerPoint.x, centerPoint.y);
     }
 
     @Override
     public boolean isOnBoarder(Point point) {
-        int leftX = Math.min(headPoint.x, headPoint.x - width);
-        int topY = Math.min(headPoint.y, headPoint.y - height);
+        int leftX = (int) (centerPoint.x - .5 * Math.abs(width));
+        int topY = (int) (centerPoint.y - .5 * Math.abs(height));
         if ((Math.abs(point.x - leftX) <= STATIC_VARS.SELECTION_PRECISION || Math.abs(point.x - (leftX + Math.abs(width))) <= STATIC_VARS.SELECTION_PRECISION)
                 && point.y >= topY && point.y <= topY + Math.abs(height)) return true;
         if ((Math.abs(point.y - topY) <= STATIC_VARS.SELECTION_PRECISION || Math.abs(point.y - (topY + Math.abs(height))) <= STATIC_VARS.SELECTION_PRECISION)
@@ -104,9 +96,21 @@ public class Rectangle extends AbstractShape {
 
     @Override
     public void resize() {
-        width = scaledWidth;
-        height = scaledHeight;
+        width = Math.abs(getScaledWidth());
+        height = Math.abs(getScaledHeight());
         scale = STATIC_VARS.INIT_SLIDER_VAL;
+        // HACK TO MAKE IT WORK
+        firstPoint = new Point(centerPoint.x - width/2, centerPoint.y - height/2);
+        secondPoint = new Point(centerPoint.x + width/2, centerPoint.y + height/2);
+        buildCenters();
     }
+
+    private int getScaledWidth(){
+        return (int) (width * ((double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE));
+    }
+    private int getScaledHeight(){
+        return (int) (height * ((double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE));
+    }
+
 
 }

@@ -8,7 +8,6 @@ import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
 import eg.edu.alexu.csd.oop.draw.model.Circle;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
@@ -27,6 +26,7 @@ public class Engine implements DrawingEngine {
     private Stack<ActionCommand> redoStack;
     private Stack<ActionCommand> undoStack;
     private Map<String, Class> loadedClasses;
+    private ArrayList<AbstractShape> capturedShapes;
 
     private Engine() {
         redoStack = new Stack<>();
@@ -180,6 +180,11 @@ public class Engine implements DrawingEngine {
     public Circle getMovingCenter(Point point) {
         for (Circle circle : shapes.stream().filter(AbstractShape::isSelected).map(k -> k.getCenters().getCircle()).collect(Collectors.toList())) {
             if (circle.fallInside(point)) {
+                try {
+                    captureSelectedShapes();
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
                 return circle;
             }
         }
@@ -204,7 +209,34 @@ public class Engine implements DrawingEngine {
     }
 
     public void resizeSelectedShapes() {
-        shapes.forEach(AbstractShape::resize);
+        List<AbstractShape> resizedShapes = new ArrayList<>();
+        List<AbstractShape> originalShapes = shapes.stream()
+                .filter(AbstractShape::isSelected)
+                .filter(k -> k.getScale() != STATIC_VARS.ORIGINAL_SHAPE_SCALE)
+                .collect(Collectors.toList());
+        if(originalShapes.isEmpty())return;
+
+        for(AbstractShape shape : originalShapes) {
+            try {
+                AbstractShape clonedShape = (AbstractShape) shape.clone();
+                shape.clearScale();
+                resizedShapes.add(clonedShape);
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        shapes.removeAll(originalShapes);
+        resizedShapes.forEach(AbstractShape::resize);
+        shapes.addAll(resizedShapes);
+        addAction(new ActionCommand(
+                ()->{
+                    shapes.removeAll(resizedShapes);
+                    shapes.addAll(originalShapes);
+                },
+                ()->{
+                    shapes.removeAll(originalShapes);
+                    shapes.addAll(resizedShapes);
+                }));
     }
 
     public List<AbstractShape> getSelectedShapes() {
@@ -243,6 +275,14 @@ public class Engine implements DrawingEngine {
         }
         return null;
     }
+    private void captureSelectedShapes() throws CloneNotSupportedException {
+        if(capturedShapes != null)return;
+        List<AbstractShape> selectedShapes = getSelectedShapes();
+        capturedShapes = new ArrayList<>();
+        for (AbstractShape selectedShape : selectedShapes) {
+            capturedShapes.add((AbstractShape) selectedShape.clone());
+        }
+    }
 
     private String loadClass(URL name, String nameOfClass) {
         System.out.println(name.toString());
@@ -259,7 +299,6 @@ public class Engine implements DrawingEngine {
         } catch (ClassNotFoundException e1) {
             // TODO Auto-generated catch block
             System.out.println("Cant load from this path " + name);
-            // JOptionPane.showMessageDialog("u cannot load class " + str,wa);
         }
         return null;
     }

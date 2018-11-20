@@ -54,6 +54,7 @@ public class Ellipse extends AbstractShape {
         } else {
             g2.setStroke(new BasicStroke(getThickness()));
         }
+        buildCenters();
 
         int scaledWidth = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
         int scaledHeight = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
@@ -86,6 +87,7 @@ public class Ellipse extends AbstractShape {
         width = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
         height = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
         scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+        buildCenters();
     }
 
 }

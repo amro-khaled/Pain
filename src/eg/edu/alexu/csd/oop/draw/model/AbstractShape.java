@@ -19,6 +19,7 @@ public abstract class AbstractShape implements Shape, Serializable {
     private int thickness;
     private final int UUID; // Universal unique ID
 
+
     protected int width;
     protected int height;
     protected Point centerPoint;
@@ -115,9 +116,7 @@ public abstract class AbstractShape implements Shape, Serializable {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return this;
-    }
+    public abstract Object clone() throws CloneNotSupportedException;
 
     public abstract boolean isOnBoarder(Point point);
 
