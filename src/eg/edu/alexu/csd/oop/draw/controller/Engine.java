@@ -6,14 +6,16 @@ import eg.edu.alexu.csd.oop.draw.command.ActionCommand;
 import eg.edu.alexu.csd.oop.draw.exceptions.ShapeNotFoundException;
 import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
 import eg.edu.alexu.csd.oop.draw.model.Circle;
-import eg.edu.alexu.csd.oop.draw.model.Line;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 import java.util.List;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class Engine implements DrawingEngine {
@@ -25,12 +27,14 @@ public class Engine implements DrawingEngine {
     private Stack<ActionCommand> redoStack;
     private Stack<ActionCommand> undoStack;
     private List<AbstractShape> capturedShapes;
+    private Map<String, Class> loadedClasses;
 
     private Engine() {
         redoStack = new Stack<>();
         undoStack = new Stack<>();
         shapes = new ArrayList<>();
         color = Color.BLACK;
+        loadedClasses = new HashMap<>();
     }
 
     @Override
@@ -260,5 +264,60 @@ public class Engine implements DrawingEngine {
 
     public void actionMovedShapes() {
         capturedShapes = null;
+    }
+
+    public String loadClasses(File file) {
+        URL myUrl;
+        try {
+            String nameOfClass = "";
+            myUrl = file.toURL();
+            String str = myUrl + "";// full path
+            int i = 0;
+            for (i = str.length() - 1; i >= 0; i--) {
+                if (str.charAt(i) == '/') {
+                    break;
+                }
+            }
+            nameOfClass = str.substring(++i, str.length() - 6);
+            URL name;
+
+            name = new URL(str.substring(0, i));
+
+            return loadClass(name, nameOfClass);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String loadClass(URL name, String nameOfClass) {
+        System.out.println(name.toString());
+        URL[] my = { name };
+        URLClassLoader classloader = new URLClassLoader(my);
+        try {
+            Class myClass = classloader.loadClass(nameOfClass);
+            if (loadedClasses.keySet().contains(nameOfClass)) {
+                System.out.println("u already loaded such a class");
+                return null;
+            }
+            loadedClasses.put(nameOfClass, myClass);
+            return nameOfClass;
+        } catch (ClassNotFoundException e1) {
+            // TODO Auto-generated catch block
+            System.out.println("Cant load from this path " + name);
+            // JOptionPane.showMessageDialog("u cannot load class " + str,wa);
+        }
+        return null;
+    }
+
+    public AbstractShape createLoadedClassShape(String curButton) {
+        try {
+            return (AbstractShape) loadedClasses.get(curButton).newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

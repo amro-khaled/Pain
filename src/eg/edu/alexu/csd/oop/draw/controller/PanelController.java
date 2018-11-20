@@ -14,20 +14,21 @@ public class PanelController {
     public Shape createAndGetShape(Point point) {
         if(curButton == null) return null;
         switch (curButton){
-            case LINE:
+            case STATIC_VARS.PANEL_BUTTON_NAME_LINE:
                 return curShape = new Line(point);
-            case CIRCLE:
+            case STATIC_VARS.PANEL_BUTTON_NAME_CIRCLE:
                 return curShape = new Circle(point);
-            case ELLIPSE:
+            case STATIC_VARS.PANEL_BUTTON_NAME_ELLIPSE:
                 return curShape = new Ellipse(point);
-            case RECTANGLE:
+            case STATIC_VARS.PANEL_BUTTON_NAME_RECTANGLE:
                 return curShape = new Rectangle(point);
-            case SQUARE:
+            case STATIC_VARS.PANEL_BUTTON_NAME_SQUARE:
                 return curShape = new Square(point);
-            case TRIANGLE:
+            case STATIC_VARS.PANEL_BUTTON_NAME_TRIANGLE:
                 return curShape = new Triangle(point);
+            default:
+                return curShape = Engine.getInstance().createLoadedClassShape(curButton);
         }
-        return null;
     }
 
     public Shape getShape(){
@@ -71,7 +72,7 @@ public class PanelController {
         }
     }
 
-    public ShapeButton curButton = null;
+    public String curButton = null;
 
     AbstractShape curShape = null;
 

@@ -9,6 +9,8 @@ import eg.edu.alexu.csd.oop.draw.controller.Engine;
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 import java.awt.*;
+import java.io.File;
+import java.net.URL;
 import java.util.Hashtable;
 
 
@@ -17,6 +19,7 @@ public class PaintWindow extends JFrame {
     Engine engine;
     Container container;
     PanelController panelController;
+    JPanel buttonsPanel;
 
     public PaintWindow() {
         super(STATIC_VARS.WINDOW_TITLE);
@@ -32,7 +35,7 @@ public class PaintWindow extends JFrame {
         container.setLayout(layout);
         container.add(paintPanel, BorderLayout.CENTER);
         JPanel rightPanel = new JPanel(new BorderLayout());
-        JPanel buttonsPanel = initButtons();
+        buttonsPanel = initButtons();
         JSlider sizeSlider = initSizeSlider();
         rightPanel.add(buttonsPanel, BorderLayout.CENTER);
         rightPanel.add(sizeSlider, BorderLayout.SOUTH);
@@ -72,7 +75,7 @@ public class PaintWindow extends JFrame {
             JButton btn = new JButton(shape.toString());
             buttons.add(btn);
             btn.addActionListener(e -> {
-                panelController.curButton = shape;
+                panelController.curButton = shape.toString();
                 engine.unSelectAll();
             });
         }
@@ -81,7 +84,33 @@ public class PaintWindow extends JFrame {
         buttons.add(initRedoButton());
         buttons.add(initSaveButton());
         buttons.add(initLoadButton());
+        buttons.add(initLoadClassesButton());
+        
         return buttons;
+    }
+
+    private JButton initLoadClassesButton() {
+        JButton undoBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_LOAD_CLASSES);
+        undoBtn.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            int returnVal = chooser.showOpenDialog(getParent());
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = chooser.getSelectedFile();
+                String s = null;
+                if((s = engine.loadClasses(file)) != null){
+                    JButton newBtn = new JButton(s);
+                    newBtn.setActionCommand(s);
+                    newBtn.addActionListener( w -> {
+                        panelController.curButton = w.getActionCommand();
+                        engine.unSelectAll();
+                    });
+                    buttonsPanel.add(newBtn);
+                    buttonsPanel.revalidate();
+                };
+            }
+        });
+        return undoBtn;
     }
 
     private JButton initUndoButton() {
@@ -91,6 +120,14 @@ public class PaintWindow extends JFrame {
             repaint();
         });
         return undoBtn;
+    }
+    private JButton initShapeButton(String nameOfClass) {
+        JButton deleteBtn = new JButton(nameOfClass);
+        deleteBtn.addActionListener(e -> {
+            engine.deleteSelectedShapes();
+            repaint();
+        });
+        return deleteBtn;
     }
 
     private JButton initRedoButton() {
