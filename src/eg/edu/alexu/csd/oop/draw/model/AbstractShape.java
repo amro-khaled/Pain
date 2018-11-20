@@ -7,21 +7,55 @@ import java.awt.*;
 import java.util.Map;
 
 public abstract class AbstractShape implements Shape {
-    private static Color defaultColor;
     private Color color;
     private Color fillColor;
     protected boolean completed;
     private boolean selected;
     protected Center centers;
-
+    protected int scale;
     private int thickness;
 
-    AbstractShape(){
+    protected int width;
+    protected int height;
+    protected Point centerPoint;
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public Point getCenterPoint() {
+        return centerPoint;
+    }
+
+    public Point getFirstPoint() {
+        return firstPoint;
+    }
+
+    public Point getSecondPoint() {
+        return secondPoint;
+    }
+
+    public Point getThirdPoint() {
+        return thirdPoint;
+    }
+
+    protected Point firstPoint;
+    protected Point secondPoint;
+    protected Point thirdPoint;
+
+    AbstractShape() {
+        scale = STATIC_VARS.INIT_SLIDER_VAL;
         thickness = STATIC_VARS.DEFAULT_THICKNESS;
         color = Color.BLACK;
         fillColor = Color.WHITE;
         selected = false;
+        completed = false;
     }
+
     @Override
     public abstract void setPosition(Point position);
 
@@ -59,14 +93,14 @@ public abstract class AbstractShape implements Shape {
     }
 
     @Override
-    public void draw(Graphics canvas){
-        if(isSelected())
+    public void draw(Graphics canvas) {
+        if (isSelected())
             centers.draw(canvas);
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return null;
+        return this;
     }
 
     public abstract boolean isOnBoarder(Point point);
@@ -80,7 +114,7 @@ public abstract class AbstractShape implements Shape {
     }
 
     public void release() {
-        completed = true;
+        setCompleted(true);
     }
 
     public final boolean isSelected() {
@@ -108,5 +142,25 @@ public abstract class AbstractShape implements Shape {
     }
 
     public abstract void moveCenter(int deltaX, int deltaY);
+
+    public abstract void resize();
+
+    public final void setScale(int sliderScaleVal) {
+        this.scale = sliderScaleVal;
+    }
+
+    public final int getScale() {
+        return this.scale;
+    }
+
+    public void setProp(int width, int height, Point centerPoint, Point firstPoint
+            , Point secondPoint, Point thirdPoint) {
+            this.width = width;
+            this.height = height;
+            this.centerPoint = centerPoint;
+            this.firstPoint = firstPoint;
+            this.secondPoint = secondPoint;
+            this.thirdPoint = thirdPoint;
+    }
 
 }

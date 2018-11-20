@@ -13,7 +13,6 @@ public class Line extends AbstractShape {
 
     public Line(Point firstPoint) {
         super();
-        setCompleted(false);
         this.firstPoint = (Point) firstPoint.clone();
     }
 
@@ -33,9 +32,9 @@ public class Line extends AbstractShape {
 
     }
 
-    private void buildCenters(){
-        if(centers == null) centers = new Center();
-        centers.setCenterPoint((firstPoint.x + secondPoint.x)/2, (firstPoint.y + secondPoint.y)/2);
+    private void buildCenters() {
+        if (centers == null) centers = new Center();
+        centers.setCenterPoint((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2);
     }
 
     @Override
@@ -47,8 +46,17 @@ public class Line extends AbstractShape {
     public void draw(Graphics canvas) {
         if (firstPoint == null || secondPoint == null) return;
         Graphics2D g2 = (Graphics2D) canvas;
-        g2.setColor(isSelected()? STATIC_VARS.SELECTION_COLOR : getColor());
-        g2.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y);
+        g2.setColor(getColor());
+        if (isSelected()) {
+            Stroke dashed = new BasicStroke(getThickness(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+            g2.setStroke(dashed);
+        } else {
+            g2.setStroke(new BasicStroke(getThickness()));
+        }
+        int width = (int) ((firstPoint.x - secondPoint.x) * 0.5 * scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE);
+        int height = (int) ((firstPoint.y - secondPoint.y) * 0.5 * scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE);
+        Point center = centers.getCircle().getCenterPoint();
+        g2.drawLine(center.x - width, center.y - height, center.x + width, center.y + height);
         super.draw(canvas);
     }
 
@@ -59,7 +67,7 @@ public class Line extends AbstractShape {
 
     @Override
     public boolean isOnBoarder(Point point) {
-        if(CalculationHelper.isSameLine(firstPoint, point, secondPoint))
+        if (CalculationHelper.isSameLine(firstPoint, point, secondPoint))
             return true;
         return false;
     }
@@ -73,5 +81,17 @@ public class Line extends AbstractShape {
         buildCenters();
     }
 
-
+    @Override
+    public void resize() {
+        Point center = centers.circle.centerPoint;
+        int width = firstPoint.x - secondPoint.x;
+        int height = firstPoint.y - secondPoint.y;
+        width = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+        height = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+        firstPoint.x = center.x + width / 2;
+        secondPoint.x = center.x - width / 2;
+        firstPoint.y = center.y + height / 2;
+        secondPoint.y = center.y - height / 2;
+        scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+    }
 }

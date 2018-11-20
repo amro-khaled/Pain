@@ -19,18 +19,18 @@ public class PaintPanelMouseMotionListener implements MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
-        if(panelController.getShape() == null)
+        if (panelController.getShape() == null) {
             Engine.getInstance().moveSelectedShapes(e.getPoint(), panelController.getMovingCenter());
-        else
+        } else {
             panelController.getShape().setPosition(e.getPoint());
+        }
 
         paintPanel.repaint();
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if(panelController.getShape() != null && !((AbstractShape) panelController.getShape()).isCompleted()){
+        if (panelController.getShape() != null && !((AbstractShape) panelController.getShape()).isCompleted()) {
             panelController.getShape().setPosition(e.getPoint());
             paintPanel.repaint();
         }

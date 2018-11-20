@@ -1,5 +1,6 @@
 package eg.edu.alexu.csd.oop.draw.view;
 
+
 import eg.edu.alexu.csd.oop.draw.controller.ColorModifierListener;
 import eg.edu.alexu.csd.oop.draw.controller.PanelController;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
@@ -8,6 +9,7 @@ import eg.edu.alexu.csd.oop.draw.controller.Engine;
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 import java.awt.*;
+import java.util.Hashtable;
 
 
 public class PaintWindow extends JFrame {
@@ -29,8 +31,13 @@ public class PaintWindow extends JFrame {
         BorderLayout layout = new BorderLayout(2, 0);
         container.setLayout(layout);
         container.add(paintPanel, BorderLayout.CENTER);
-        initShapeButtons();
-        initColorChooser();
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        JPanel buttonsPanel = initButtons();
+        JSlider sizeSlider = initSizeSlider();
+        rightPanel.add(buttonsPanel, BorderLayout.CENTER);
+        rightPanel.add(sizeSlider, BorderLayout.SOUTH);
+        container.add(rightPanel, BorderLayout.EAST);
+        initColorChooser(rightPanel);
         paintPanel.setPreferredSize(new Dimension((int) getContentPane().getSize().getWidth(), 450));
         repaint();
         pack();
@@ -38,22 +45,30 @@ public class PaintWindow extends JFrame {
         setVisible(true);
     }
 
-    private void initShapeButtons() {
-        JPanel buttons = addShapesButtons();
-        JButton deleteBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_DELETE);
-        buttons.add(deleteBtn);
-        deleteBtn.addActionListener(e -> {
-            engine.deleteSelectedShapes();
+    public JSlider initSizeSlider() {
+        JSlider sizeSlider = new JSlider(JSlider.HORIZONTAL,
+                STATIC_VARS.MIN_SLIDER_VAL, STATIC_VARS.MAX_SLIDER_VAL, STATIC_VARS.INIT_SLIDER_VAL);
+        sizeSlider.setPaintLabels(true);
+        sizeSlider.addChangeListener(e -> {
+            if (sizeSlider.getValue() == STATIC_VARS.ORIGINAL_SHAPE_SCALE && sizeSlider.getValueIsAdjusting()) {
+            }
+            engine.scaleSelectedShapes(sizeSlider.getValue());
+            if (!sizeSlider.getValueIsAdjusting()) {
+                engine.resizeSelectedShapes();
+                sizeSlider.setValue(STATIC_VARS.INIT_SLIDER_VAL);
+            }
+            Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+            labelTable.put(sizeSlider.getValue(), new JLabel(String.format("%d%%", sizeSlider.getValue())));
+            sizeSlider.setLabelTable(labelTable);
             repaint();
         });
-
-        container.add(BorderLayout.EAST, buttons);
+        return sizeSlider;
     }
 
-    private JPanel addShapesButtons() {
+    private JPanel initButtons() {
         JPanel buttons = new JPanel();
-        buttons.setLayout(new GridLayout(6, 1));
-        for(PanelController.ShapeButton shape : PanelController.ShapeButton.values()){
+        buttons.setLayout(new GridLayout(7, 1));
+        for (PanelController.ShapeButton shape : PanelController.ShapeButton.values()) {
             JButton btn = new JButton(shape.toString());
             buttons.add(btn);
             btn.addActionListener(e -> {
@@ -61,10 +76,20 @@ public class PaintWindow extends JFrame {
                 engine.unSelectAll();
             });
         }
+        buttons.add(initDelButton());
         return buttons;
     }
 
-    private void initColorChooser(){
+    private JButton initDelButton() {
+        JButton deleteBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_DELETE);
+        deleteBtn.addActionListener(e -> {
+            engine.deleteSelectedShapes();
+            repaint();
+        });
+        return deleteBtn;
+    }
+
+    private void initColorChooser(JPanel panel) {
         JColorChooser chooser = new JColorChooser();
         AbstractColorChooserPanel[] oldPanels = chooser.getChooserPanels();
         for (int i = 0; i < oldPanels.length; i++) {
@@ -77,6 +102,6 @@ public class PaintWindow extends JFrame {
         chooser.getSelectionModel().addChangeListener(new ColorModifierListener(this, chooser));
         AbstractColorChooserPanel colorPanel = chooser.getChooserPanels()[0];
         JPanel chooserPanel = (JPanel) colorPanel.getComponent(0);
-        container.add(BorderLayout.SOUTH, chooserPanel);
+        panel.add(BorderLayout.NORTH, chooserPanel);
     }
 }

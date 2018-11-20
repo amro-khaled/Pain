@@ -13,15 +13,16 @@ public class Circle extends Ellipse {
 
     @Override
     public void setPosition(Point position) {
-        int radius = (int) Math.sqrt(Math.pow(centerPoint.x - position.x, 2)  + Math.pow(centerPoint.y - position.y, 2));
+        int radius = (int) Math.sqrt(Math.pow(centerPoint.x - position.x, 2) + Math.pow(centerPoint.y - position.y, 2));
         width = height = radius;
         buildCenters();
     }
 
 
-    protected void setRadius(int radius){
+    protected void setRadius(int radius) {
         width = height = radius;
     }
+
     @Override
     public Point getPosition() {
         return null;

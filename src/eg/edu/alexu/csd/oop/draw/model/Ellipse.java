@@ -6,13 +6,8 @@ import java.awt.*;
 import java.util.Map;
 
 public class Ellipse extends AbstractShape {
-    protected int width;
-    protected int height;
-    protected Point centerPoint;
-
     public Ellipse(Point centerPoint) {
         super();
-        setCompleted(false);
         this.centerPoint = centerPoint;
     }
 
@@ -45,9 +40,18 @@ public class Ellipse extends AbstractShape {
     @Override
     public void draw(Graphics canvas) {
         Graphics2D g2 = (Graphics2D) canvas;
-        g2.setStroke(new BasicStroke(getThickness()));
-        g2.setColor(isSelected() ? STATIC_VARS.SELECTION_COLOR : getColor());
-        g2.drawOval(centerPoint.x - width, centerPoint.y - height, 2 * width, 2 * height);
+        g2.setColor(getColor());
+        if (isSelected()) {
+            Stroke dashed = new BasicStroke(getThickness(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+            g2.setStroke(dashed);
+        } else {
+            g2.setStroke(new BasicStroke(getThickness()));
+        }
+
+        int scaledWidth = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+        int scaledHeight = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+
+        g2.drawOval(centerPoint.x - scaledWidth, centerPoint.y - scaledHeight, 2 * scaledWidth, 2 * scaledHeight);
         super.draw(canvas);
     }
 
@@ -68,6 +72,13 @@ public class Ellipse extends AbstractShape {
         centerPoint.x += deltaX;
         centerPoint.y += deltaY;
         buildCenters();
+    }
+
+    @Override
+    public void resize() {
+        width = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+        height = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+        scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
     }
 
 }

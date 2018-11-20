@@ -5,9 +5,11 @@ import eg.edu.alexu.csd.oop.draw.model.*;
 import eg.edu.alexu.csd.oop.draw.model.Rectangle;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class PanelController {
+
 
     public Shape createAndGetShape(Point point) {
         if(curButton == null) return null;
@@ -28,18 +30,10 @@ public class PanelController {
         return null;
     }
 
-    // Determines the mode of the panel.
-    public boolean isPaintingMode(){
-        return curButton != null;
-    }
     public Shape getShape(){
         return curShape;
     }
-    boolean movingMode = false;
     Circle movingCenter = null;
-    public void setShape(ShapeButton sb){
-        curButton = sb;
-    }
 
     public void release() {
         if(curShape != null){
@@ -49,14 +43,6 @@ public class PanelController {
                 curButton = null;
             }
         }
-    }
-
-    public void selectShapes(Point point) {
-
-    }
-
-    public boolean isMovingMode() {
-        return movingMode;
     }
 
     public Circle getMovingCenter() {
