@@ -97,7 +97,7 @@ public class PaintWindow extends JFrame {
             int returnVal = chooser.showOpenDialog(getParent());
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
-                String s = null;
+                String s;
                 if((s = engine.loadClasses(file)) != null){
                     JButton newBtn = new JButton(s);
                     newBtn.setActionCommand(s);

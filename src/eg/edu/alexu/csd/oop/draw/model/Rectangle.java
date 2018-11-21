@@ -13,11 +13,11 @@ public class Rectangle extends AbstractShape {
         centerPoint = firstPoint;
     }
 
-    public Rectangle(Point firstPoint, Point secondPoint, Point center, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
-        super(color, fillColor, thickness, UUID, scale);
+    public Rectangle(Point firstPoint, Point secondPoint, Point center, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
+        super(color, fillColor, thickness, UUID, scale, deltaX, deltaY);
         this.firstPoint = (Point) firstPoint.clone();
-        this.secondPoint = secondPoint;
-        this.centerPoint = center;
+        this.secondPoint = (Point) secondPoint.clone();
+        this.centerPoint = (Point) center.clone();
         this.width = width;
         this.height = height;
     }
@@ -59,8 +59,8 @@ public class Rectangle extends AbstractShape {
         if(centerPoint == null)
             centerPoint = new Point((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y)/2);
 
-        g2.drawRect(Math.min(centerPoint.x + getScaledWidth()/2, centerPoint.x - getScaledWidth()/2)
-                , Math.min(centerPoint.y + getScaledHeight()/2, centerPoint.y - getScaledHeight()/2)
+        g2.drawRect(deltaX + Math.min(centerPoint.x + getScaledWidth()/2, centerPoint.x - getScaledWidth()/2)
+                , deltaY + Math.min(centerPoint.y + getScaledHeight()/2, centerPoint.y - getScaledHeight()/2)
                 , Math.abs(getScaledWidth())
                 , Math.abs(getScaledHeight()));
         super.draw(canvas);
@@ -68,12 +68,18 @@ public class Rectangle extends AbstractShape {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new Rectangle(firstPoint, secondPoint, centerPoint, width, height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
+        return new Rectangle(firstPoint, secondPoint, centerPoint, width, height, getColor(), getFillColor(), getThickness(), getUUID(), getScale(), getDeltaX(), getDeltaY());
     }
 
     protected void buildCenters() {
-        if (centers == null) centers = new Center();
-        centers.setCenterPoint(centerPoint.x, centerPoint.y);
+    }
+
+    @Override
+    public void applyMovement() {
+        firstPoint = new Point(firstPoint.x + deltaX, firstPoint.y + deltaY);
+        secondPoint = new Point(secondPoint.x + deltaX, secondPoint.y + deltaY);
+        centerPoint = new Point(centerPoint.x + deltaX, centerPoint.y + deltaY);
+        deltaY = deltaX = 0;
     }
 
     @Override
@@ -85,13 +91,6 @@ public class Rectangle extends AbstractShape {
         if ((Math.abs(point.y - topY) <= STATIC_VARS.SELECTION_PRECISION || Math.abs(point.y - (topY + Math.abs(height))) <= STATIC_VARS.SELECTION_PRECISION)
                 && point.x >= leftX && point.x <= leftX + Math.abs(width)) return true;
         return false;
-    }
-
-    @Override
-    public void moveCenter(int deltaX, int deltaY) {
-        centerPoint.x += deltaX;
-        centerPoint.y += deltaY;
-        buildCenters();
     }
 
     @Override

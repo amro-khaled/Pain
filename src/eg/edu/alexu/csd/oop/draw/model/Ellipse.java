@@ -11,9 +11,9 @@ public class Ellipse extends AbstractShape {
         this.centerPoint = centerPoint;
     }
 
-    protected Ellipse(Point centerPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
-        super(color, fillColor, thickness, UUID, scale);
-        this.centerPoint = centerPoint;
+    protected Ellipse(Point centerPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
+        super(color, fillColor, thickness, UUID, scale, deltaX, deltaY);
+        this.centerPoint = (Point) centerPoint.clone();
         this.width = width;
         this.height = height;
     }
@@ -26,9 +26,14 @@ public class Ellipse extends AbstractShape {
     }
 
     protected void buildCenters() {
-        if(centers == null) centers = new Center();
-        centers.setCenterPoint(centerPoint.x, centerPoint.y);
     }
+
+    @Override
+    public void applyMovement() {
+        centerPoint = new Point(centerPoint.x + deltaX, centerPoint.y + deltaY);
+        deltaY = deltaX = 0;
+    }
+
     @Override
     public Point getPosition() {
         return null;
@@ -59,13 +64,13 @@ public class Ellipse extends AbstractShape {
         int scaledWidth = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
         int scaledHeight = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
 
-        g2.drawOval(centerPoint.x - scaledWidth, centerPoint.y - scaledHeight, 2 * scaledWidth, 2 * scaledHeight);
+        g2.drawOval(centerPoint.x - scaledWidth + deltaX, centerPoint.y - scaledHeight + deltaY, 2 * scaledWidth, 2 * scaledHeight);
         super.draw(canvas);
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new Ellipse(this.centerPoint, this.width, this.height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
+        return new Ellipse(this.centerPoint, this.width, this.height, getColor(), getFillColor(), getThickness(), getUUID(), getScale(), getDeltaX(), getDeltaY());
     }
 
     @Override
@@ -76,18 +81,10 @@ public class Ellipse extends AbstractShape {
     }
 
     @Override
-    public void moveCenter(int deltaX, int deltaY) {
-        centerPoint.x += deltaX;
-        centerPoint.y += deltaY;
-        buildCenters();
-    }
-
-    @Override
     public void resize() {
         width = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
         height = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
         scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
-        buildCenters();
     }
 
 }

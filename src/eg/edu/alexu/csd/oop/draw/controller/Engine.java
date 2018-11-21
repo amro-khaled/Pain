@@ -6,6 +6,7 @@ import eg.edu.alexu.csd.oop.draw.command.ActionCommand;
 import eg.edu.alexu.csd.oop.draw.exceptions.ShapeNotFoundException;
 import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
 import eg.edu.alexu.csd.oop.draw.model.Circle;
+import eg.edu.alexu.csd.oop.draw.utils.CalculationHelper;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
 import java.awt.*;
@@ -26,7 +27,7 @@ public class Engine implements DrawingEngine {
     private Stack<ActionCommand> redoStack;
     private Stack<ActionCommand> undoStack;
     private Map<String, Class> loadedClasses;
-    private ArrayList<AbstractShape> capturedShapes;
+    private List<AbstractShape> capturedShapes;
 
     private Engine() {
         redoStack = new Stack<>();
@@ -177,25 +178,21 @@ public class Engine implements DrawingEngine {
         return instance == null ? instance = new Engine() : instance;
     }
 
-    public Circle getMovingCenter(Point point) {
-        for (Circle circle : shapes.stream().filter(AbstractShape::isSelected).map(k -> k.getCenters().getCircle()).collect(Collectors.toList())) {
-            if (circle.fallInside(point)) {
-                try {
-                    captureSelectedShapes();
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                }
-                return circle;
+    public Point getMovingCenter(Point point) {
+        for (Point centerPoint : shapes.stream().filter(AbstractShape::isSelected).map(k -> k.getMovedCenterPoint()).collect(Collectors.toList())) {
+            if (CalculationHelper.dist(centerPoint, point) <= STATIC_VARS.CENTERS_RADIUS) {
+                captureSelectedShapes();
+                return centerPoint;
             }
         }
         return null;
     }
 
 
-    public void moveSelectedShapes(Point point, Circle circle) {
+    public void moveSelectedShapes(Point point, Point circle) {
         if (circle == null) return;
-        int deltaX = point.x - circle.getCenterPoint().x;
-        int deltaY = point.y - circle.getCenterPoint().y;
+        int deltaX = point.x - circle.x;
+        int deltaY = point.y - circle.y;
 
         shapes.stream()
                 .filter(AbstractShape::isSelected)
@@ -275,13 +272,9 @@ public class Engine implements DrawingEngine {
         }
         return null;
     }
-    private void captureSelectedShapes() throws CloneNotSupportedException {
+    private void captureSelectedShapes() {
         if(capturedShapes != null)return;
-        List<AbstractShape> selectedShapes = getSelectedShapes();
-        capturedShapes = new ArrayList<>();
-        for (AbstractShape selectedShape : selectedShapes) {
-            capturedShapes.add((AbstractShape) selectedShape.clone());
-        }
+        capturedShapes = getSelectedShapes();
     }
 
     private String loadClass(URL name, String nameOfClass) {
@@ -312,5 +305,32 @@ public class Engine implements DrawingEngine {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void actionMovedShapes() {
+        if(capturedShapes == null)return;
+        capturedShapes = null;
+        List<AbstractShape> originalShapes = getSelectedShapes();
+        List<AbstractShape> movedShapes = new ArrayList<>();
+        for(AbstractShape shape : originalShapes){
+            try {
+                movedShapes.add((AbstractShape) shape.clone());
+                shape.resetMovement();
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        originalShapes.forEach(AbstractShape::unSelect);
+        movedShapes.forEach(AbstractShape::applyMovement);
+        shapes.removeAll(originalShapes);
+        shapes.addAll(movedShapes);
+        addAction(new ActionCommand(()->{
+            shapes.removeAll(movedShapes);
+            shapes.addAll(originalShapes);
+        },
+        ()->{
+            shapes.removeAll(originalShapes);
+            shapes.addAll(movedShapes);
+        }));
     }
 }

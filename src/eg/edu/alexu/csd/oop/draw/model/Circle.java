@@ -11,8 +11,8 @@ public class Circle extends Ellipse {
         super(centerPoint);
     }
 
-    protected Circle(Point centerPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale) {
-        super(centerPoint, width, height, color, fillColor, thickness, UUID, scale);
+    protected Circle(Point centerPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
+        super(centerPoint, width, height, color, fillColor, thickness, UUID, scale, deltaX, deltaY);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class Circle extends Ellipse {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new Circle(this.centerPoint, this.width, this.height, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
+        return new Circle(this.centerPoint, this.width, this.height, getColor(), getFillColor(), getThickness(), getUUID(), getScale(), getDeltaX(), getDeltaY());
     }
 
     public boolean fallInside(Point point) {

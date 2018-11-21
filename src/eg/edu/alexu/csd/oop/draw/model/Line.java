@@ -13,8 +13,8 @@ public class Line extends AbstractShape {
         this.firstPoint = (Point) firstPoint.clone();
     }
 
-    public Line(Point firstPoint, Point secondPoint, Color color, Color fillColor, int thickness, int UUID, int scale) {
-        super(color, fillColor, thickness, UUID, scale);
+    public Line(Point firstPoint, Point secondPoint, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
+        super(color, fillColor, thickness, UUID, scale, deltaX, deltaY);
         this.firstPoint = (Point) firstPoint.clone();
         this.secondPoint = (Point) secondPoint.clone();
         buildCenters();
@@ -36,9 +36,16 @@ public class Line extends AbstractShape {
 
     }
 
-    private void buildCenters() {
-        if (centers == null) centers = new Center();
-        centers.setCenterPoint((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2);
+    protected void buildCenters() {
+        centerPoint = new Point((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2);
+    }
+
+    @Override
+    public void applyMovement() {
+        firstPoint = new Point(firstPoint.x + deltaX, firstPoint.y + deltaY);
+        secondPoint = new Point(secondPoint.x + deltaX, secondPoint.y + deltaY);
+        buildCenters();
+        deltaY = deltaX = 0;
     }
 
     @Override
@@ -59,14 +66,13 @@ public class Line extends AbstractShape {
         }
         int width = (int) ((firstPoint.x - secondPoint.x) * 0.5 * scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE);
         int height = (int) ((firstPoint.y - secondPoint.y) * 0.5 * scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE);
-        Point center = centers.getCircle().getCenterPoint();
-        g2.drawLine(center.x - width, center.y - height, center.x + width, center.y + height);
+        g2.drawLine(deltaX + centerPoint.x - width, deltaY + centerPoint.y - height, deltaX + centerPoint.x + width, deltaY + centerPoint.y + height);
         super.draw(canvas);
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new Line(firstPoint, secondPoint, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
+        return new Line(firstPoint, secondPoint, getColor(), getFillColor(), getThickness(), getUUID(), getScale(), getDeltaX(), getDeltaY());
     }
 
     @Override
@@ -77,25 +83,15 @@ public class Line extends AbstractShape {
     }
 
     @Override
-    public void moveCenter(int deltaX, int deltaY) {
-        firstPoint.x += deltaX;
-        firstPoint.y += deltaY;
-        secondPoint.x += deltaX;
-        secondPoint.y += deltaY;
-        buildCenters();
-    }
-
-    @Override
     public void resize() {
-        Point center = centers.circle.centerPoint;
-        int width = firstPoint.x - secondPoint.x;
-        int height = firstPoint.y - secondPoint.y;
-        width = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
-        height = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
-        firstPoint.x = center.x + width / 2;
-        secondPoint.x = center.x - width / 2;
-        firstPoint.y = center.y + height / 2;
-        secondPoint.y = center.y - height / 2;
+//        int width = firstPoint.x - secondPoint.x;
+//        int height = firstPoint.y - secondPoint.y;
+        this.width = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+        this.height = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+        firstPoint.x = centerPoint.x + width / 2;
+        secondPoint.x = centerPoint.x - width / 2;
+        firstPoint.y = centerPoint.y + height / 2;
+        secondPoint.y = centerPoint.y - height / 2;
         scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
     }
 }

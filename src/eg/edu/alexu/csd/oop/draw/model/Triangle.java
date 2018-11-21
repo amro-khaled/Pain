@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class Triangle extends AbstractShape {
     public boolean readyForThirdPoint;
+    protected Point thirdPoint;
 
     public Triangle(Point firstPoint) {
         super();
@@ -15,8 +16,8 @@ public class Triangle extends AbstractShape {
         readyForThirdPoint = false;
     }
 
-    public Triangle(Point firstPoint, Point secondPoint, Point thirdPoint, Color color, Color fillColor, int thickness, int UUID, int scale) {
-        super(color, fillColor, thickness, UUID, scale);
+    public Triangle(Point firstPoint, Point secondPoint, Point thirdPoint, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
+        super(color, fillColor, thickness, UUID, scale, deltaX, deltaY);
         this.firstPoint = firstPoint;
         this.secondPoint = secondPoint;
         this.thirdPoint = thirdPoint;
@@ -33,9 +34,17 @@ public class Triangle extends AbstractShape {
         }
     }
 
-    private void buildCenters() {
-        if (centers == null) centers = new Center();
-        centers.setCenterPoint((firstPoint.x + secondPoint.x + thirdPoint.x) / 3, (firstPoint.y + secondPoint.y + thirdPoint.y) / 3);
+    protected void buildCenters() {
+        centerPoint = new Point((firstPoint.x + secondPoint.x + thirdPoint.x) / 3, (firstPoint.y + secondPoint.y + thirdPoint.y) / 3);
+    }
+
+    @Override
+    public void applyMovement() {
+        firstPoint = new Point(firstPoint.x + deltaX, firstPoint.y + deltaY);
+        secondPoint = new Point(secondPoint.x + deltaX, secondPoint.y + deltaY);
+        thirdPoint = new Point(thirdPoint.x + deltaX, thirdPoint.y + deltaY);
+        centerPoint = new Point(centerPoint.x + deltaX, centerPoint.y + deltaY);
+        deltaY = deltaX = 0;
     }
 
     @Override
@@ -65,10 +74,9 @@ public class Triangle extends AbstractShape {
             g2.setStroke(new BasicStroke(getThickness()));
         }
         if (thirdPoint != null) {
-            Point center = centers.circle.centerPoint;
-            g2.drawLine(getScaledPoint(center.x, firstPoint.x), getScaledPoint(center.y, firstPoint.y), getScaledPoint(center.x, secondPoint.x), getScaledPoint(center.y, secondPoint.y));
-            g2.drawLine(getScaledPoint(center.x, thirdPoint.x), getScaledPoint(center.y, thirdPoint.y), getScaledPoint(center.x, secondPoint.x), getScaledPoint(center.y, secondPoint.y));
-            g2.drawLine(getScaledPoint(center.x, firstPoint.x), getScaledPoint(center.y, firstPoint.y), getScaledPoint(center.x, thirdPoint.x), getScaledPoint(center.y, thirdPoint.y));
+            g2.drawLine(deltaX + getScaledPoint(centerPoint.x, firstPoint.x), deltaY + getScaledPoint(centerPoint.y, firstPoint.y), deltaX + getScaledPoint(centerPoint.x, secondPoint.x), deltaY + getScaledPoint(centerPoint.y, secondPoint.y));
+            g2.drawLine(deltaX + getScaledPoint(centerPoint.x, thirdPoint.x), deltaY + getScaledPoint(centerPoint.y, thirdPoint.y), deltaX + getScaledPoint(centerPoint.x, secondPoint.x), deltaY + getScaledPoint(centerPoint.y, secondPoint.y));
+            g2.drawLine(deltaX + getScaledPoint(centerPoint.x, firstPoint.x), deltaY + getScaledPoint(centerPoint.y, firstPoint.y), deltaX + getScaledPoint(centerPoint.x, thirdPoint.x), deltaY + getScaledPoint(centerPoint.y, thirdPoint.y));
             super.draw(canvas);
         } else {
             g2.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y);
@@ -77,7 +85,7 @@ public class Triangle extends AbstractShape {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new Triangle(firstPoint, secondPoint, thirdPoint, getColor(), getFillColor(), getThickness(), getUUID(), getScale());
+        return new Triangle(firstPoint, secondPoint, thirdPoint, getColor(), getFillColor(), getThickness(), getUUID(), getScale(), getDeltaX(), getDeltaY());
     }
 
     @Override
@@ -97,24 +105,13 @@ public class Triangle extends AbstractShape {
     }
 
     @Override
-    public void moveCenter(int deltaX, int deltaY) {
-        firstPoint.x += deltaX;
-        firstPoint.y += deltaY;
-        secondPoint.x += deltaX;
-        secondPoint.y += deltaY;
-        thirdPoint.x += deltaX;
-        thirdPoint.y += deltaY;
-        buildCenters();
-    }
-
-    @Override
     public void resize() {
         buildPoints();
         scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
     }
 
     private void buildPoints() {
-        Point center = centers.circle.centerPoint;
+        Point center = centerPoint;
         firstPoint.x = getScaledPoint(center.x, firstPoint.x);
         firstPoint.y = getScaledPoint(center.y, firstPoint.y);
         secondPoint.x = getScaledPoint(center.x, secondPoint.x);

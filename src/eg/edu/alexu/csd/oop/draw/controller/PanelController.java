@@ -34,7 +34,7 @@ public class PanelController {
     public Shape getShape(){
         return curShape;
     }
-    Circle movingCenter = null;
+    Point movingCenter = null;
 
     public void release() {
         if(curShape != null){
@@ -46,10 +46,10 @@ public class PanelController {
         }
     }
 
-    public Circle getMovingCenter() {
+    public Point getMovingCenter() {
         return movingCenter;
     }
-    public void setMovingCenter(Circle movingCenter) {
+    public void setMovingCenter(Point movingCenter) {
         this.movingCenter = movingCenter;
     }
 

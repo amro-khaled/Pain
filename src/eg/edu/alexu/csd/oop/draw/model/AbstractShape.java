@@ -14,17 +14,21 @@ public abstract class AbstractShape implements Shape, Serializable {
     private Color fillColor;
     protected boolean completed;
     private boolean selected;
-    protected Center centers;
     protected int scale;
     private int thickness;
     private final int UUID; // Universal unique ID
 
-
-    protected int width;
-    protected int height;
+    protected Point firstPoint;
+    protected Point secondPoint;
     protected Point centerPoint;
 
-    public AbstractShape(Color color, Color fillColor, int thickness, int UUID, int scale) {
+
+    protected int deltaX;
+    protected int deltaY;
+    protected int width;
+    protected int height;
+
+    public AbstractShape(Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
         this.color = color;
         this.fillColor = fillColor;
         this.thickness = thickness;
@@ -33,6 +37,16 @@ public abstract class AbstractShape implements Shape, Serializable {
         this.completed = false;
         this.UUID = UUID;
         this.scale = scale;
+        this.deltaX = deltaX;
+        this.deltaY = deltaY;
+    }
+
+    public int getDeltaX() {
+        return deltaX;
+    }
+
+    public int getDeltaY() {
+        return deltaY;
     }
 
     public int getWidth() {
@@ -55,13 +69,6 @@ public abstract class AbstractShape implements Shape, Serializable {
         return secondPoint;
     }
 
-    public Point getThirdPoint() {
-        return thirdPoint;
-    }
-
-    protected Point firstPoint;
-    protected Point secondPoint;
-    protected Point thirdPoint;
 
     AbstractShape() {
         scale = STATIC_VARS.INIT_SLIDER_VAL;
@@ -111,8 +118,14 @@ public abstract class AbstractShape implements Shape, Serializable {
 
     @Override
     public void draw(Graphics canvas) {
-        if (isSelected())
-            centers.draw(canvas);
+        if (isSelected()) {
+            Graphics2D g2 = (Graphics2D) canvas;
+            g2.setColor(STATIC_VARS.CENTERS_COLOR);
+            g2.setStroke(new BasicStroke(STATIC_VARS.CENTER_THICKNESS));
+            g2.drawLine(deltaX + centerPoint.x, deltaY + centerPoint.y, deltaX + centerPoint.x, deltaY + centerPoint.y);
+            int rad = STATIC_VARS.CENTERS_RADIUS;
+            g2.drawOval(deltaX + centerPoint.x - rad, deltaY + centerPoint.y - rad, 2 * rad, 2 * rad);
+        }
     }
 
     @Override
@@ -152,12 +165,6 @@ public abstract class AbstractShape implements Shape, Serializable {
         this.thickness = thickness;
     }
 
-    public Center getCenters() {
-        return centers;
-    }
-
-    public abstract void moveCenter(int deltaX, int deltaY);
-
     public abstract void resize();
 
     public final void setScale(int sliderScaleVal) {
@@ -166,16 +173,6 @@ public abstract class AbstractShape implements Shape, Serializable {
 
     public final int getScale() {
         return this.scale;
-    }
-
-    public void setProp(int width, int height, Point centerPoint, Point firstPoint
-            , Point secondPoint, Point thirdPoint) {
-            this.width = width;
-            this.height = height;
-            this.centerPoint = centerPoint;
-            this.firstPoint = firstPoint;
-            this.secondPoint = secondPoint;
-            this.thirdPoint = thirdPoint;
     }
 
     protected int getUUID() {
@@ -189,4 +186,22 @@ public abstract class AbstractShape implements Shape, Serializable {
     public final void clearScale(){
         this.scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
     }
+
+    public final void moveCenter(int deltaX, int deltaY) {
+        this.deltaY = deltaY;
+        this.deltaX = deltaX;
+        buildCenters();
+    }
+
+    protected abstract void buildCenters();
+
+    public final Point getMovedCenterPoint() {
+        return new Point(centerPoint.x + deltaX, centerPoint.y + deltaY);
+    }
+
+    public final void resetMovement(){
+        deltaY = deltaX = 0;
+    }
+
+    public abstract void applyMovement();
 }
