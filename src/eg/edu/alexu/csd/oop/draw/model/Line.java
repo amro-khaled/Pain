@@ -84,14 +84,14 @@ public class Line extends AbstractShape {
 
     @Override
     public void resize() {
-//        int width = firstPoint.x - secondPoint.x;
-//        int height = firstPoint.y - secondPoint.y;
+        int width = firstPoint.x - secondPoint.x;
+        int height = firstPoint.y - secondPoint.y;
         this.width = (width * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
         this.height = (height * scale) / STATIC_VARS.ORIGINAL_SHAPE_SCALE;
-        firstPoint.x = centerPoint.x + width / 2;
-        secondPoint.x = centerPoint.x - width / 2;
-        firstPoint.y = centerPoint.y + height / 2;
-        secondPoint.y = centerPoint.y - height / 2;
+        firstPoint.x = centerPoint.x + this.width / 2;
+        secondPoint.x = centerPoint.x - this.width / 2;
+        firstPoint.y = centerPoint.y + this.height / 2;
+        secondPoint.y = centerPoint.y - this.height / 2;
         scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
     }
 }
