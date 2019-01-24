@@ -5,7 +5,6 @@ import eg.edu.alexu.csd.oop.draw.model.*;
 import eg.edu.alexu.csd.oop.draw.model.Rectangle;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class PanelController {
@@ -74,6 +73,6 @@ public class PanelController {
 
     public String curButton = null;
 
-    AbstractShape curShape = null;
+    Shape curShape = null;
 
 }

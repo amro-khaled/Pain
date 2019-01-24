@@ -30,4 +30,5 @@ public final class STATIC_VARS {
     public static final String PANEL_BUTTON_NAME_LOAD = "LOAD";
     public static final String PANEL_BUTTON_NAME_LOAD_CLASSES = "LOAD CLASSES ";
     public static final String PACKAGE_NAME = "eg.edu.alexu.csd.oop.draw.model.";
+    public static final String PANEL_BUTTON_NAME_ROUNDRECTANGLE = "RoundRectangle";
 }

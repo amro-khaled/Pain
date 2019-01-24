@@ -11,6 +11,8 @@ public class Ellipse extends AbstractShape {
         this.centerPoint = centerPoint;
     }
 
+    public Ellipse() {}
+
     protected Ellipse(Point centerPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
         super(color, fillColor, thickness, UUID, scale, deltaX, deltaY);
         this.centerPoint = (Point) centerPoint.clone();
@@ -35,17 +37,12 @@ public class Ellipse extends AbstractShape {
     }
 
     @Override
+    public String toString() {
+        return "Ellipse";
+    }
+
+    @Override
     public Point getPosition() {
-        return null;
-    }
-
-    @Override
-    public void setProperties(Map<String, Double> properties) {
-
-    }
-
-    @Override
-    public Map<String, Double> getProperties() {
         return null;
     }
 

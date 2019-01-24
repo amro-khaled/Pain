@@ -85,32 +85,40 @@ public class PaintWindow extends JFrame {
         buttons.add(initSaveButton());
         buttons.add(initLoadButton());
         buttons.add(initLoadClassesButton());
-        
+
         return buttons;
     }
 
     private JButton initLoadClassesButton() {
-        JButton undoBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_LOAD_CLASSES);
-        undoBtn.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            int returnVal = chooser.showOpenDialog(getParent());
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = chooser.getSelectedFile();
-                String s;
-                if((s = engine.loadClasses(file)) != null){
-                    JButton newBtn = new JButton(s);
-                    newBtn.setActionCommand(s);
-                    newBtn.addActionListener( w -> {
-                        panelController.curButton = w.getActionCommand();
-                        engine.unSelectAll();
-                    });
-                    buttonsPanel.add(newBtn);
-                    buttonsPanel.revalidate();
-                };
-            }
-        });
-        return undoBtn;
+        JButton newBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_LOAD_CLASSES);
+        if (STATIC_VARS.PANEL_BUTTON_NAME_LOAD_CLASSES.equals(STATIC_VARS.PANEL_BUTTON_NAME_ROUNDRECTANGLE)) {
+            newBtn.addActionListener(e -> {
+                panelController.curButton = STATIC_VARS.PANEL_BUTTON_NAME_ROUNDRECTANGLE;
+                engine.unSelectAll();
+            });
+        } else {
+            newBtn.addActionListener(e -> {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                int returnVal = chooser.showOpenDialog(getParent());
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = chooser.getSelectedFile();
+                    String s;
+                    if ((s = engine.loadClasses(file)) != null) {
+                        JButton newButton = new JButton(s);
+                        newButton.setActionCommand(s);
+                        newButton.addActionListener(w -> {
+                            panelController.curButton = w.getActionCommand();
+                            engine.unSelectAll();
+                        });
+                        buttonsPanel.add(newButton);
+                        buttonsPanel.revalidate();
+                    }
+                    ;
+                }
+            });
+        }
+        return newBtn;
     }
 
     private JButton initUndoButton() {
@@ -121,14 +129,6 @@ public class PaintWindow extends JFrame {
         });
         return undoBtn;
     }
-    private JButton initShapeButton(String nameOfClass) {
-        JButton deleteBtn = new JButton(nameOfClass);
-        deleteBtn.addActionListener(e -> {
-            engine.deleteSelectedShapes();
-            repaint();
-        });
-        return deleteBtn;
-    }
 
     private JButton initRedoButton() {
         JButton redoBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_REDO);
@@ -138,6 +138,7 @@ public class PaintWindow extends JFrame {
         });
         return redoBtn;
     }
+
     private JButton initDelButton() {
         JButton deleteBtn = new JButton(STATIC_VARS.PANEL_BUTTON_NAME_DELETE);
         deleteBtn.addActionListener(e -> {
@@ -153,7 +154,7 @@ public class PaintWindow extends JFrame {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnVal = chooser.showSaveDialog(getParent());
-            if(returnVal == JFileChooser.APPROVE_OPTION){
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
                 engine.save(chooser.getSelectedFile().getAbsolutePath());
             }
         });
@@ -166,14 +167,13 @@ public class PaintWindow extends JFrame {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             int returnVal = chooser.showOpenDialog(getParent());
-            if(returnVal == JFileChooser.APPROVE_OPTION) {
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
                 engine.load(chooser.getSelectedFile().getAbsolutePath());
             }
             repaint();
         });
         return loadBtn;
     }
-
 
 
     private void initColorChooser(JPanel panel) {

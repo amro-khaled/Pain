@@ -10,6 +10,9 @@ public class Square extends Rectangle {
     public Square(Point firstPoint, Point secondPoint, Point center, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
         super(firstPoint, secondPoint, center, width, height, color, fillColor, thickness, UUID, scale, deltaX, deltaY);
     }
+    public Square() {
+
+    }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -31,5 +34,9 @@ public class Square extends Rectangle {
             }
         }
         buildCenters();
+    }
+    @Override
+    public String toString() {
+        return "Square";
     }
 }

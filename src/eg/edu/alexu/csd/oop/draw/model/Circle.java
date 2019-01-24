@@ -10,6 +10,7 @@ public class Circle extends Ellipse {
     public Circle(Point centerPoint) {
         super(centerPoint);
     }
+    public Circle() {}
 
     protected Circle(Point centerPoint, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
         super(centerPoint, width, height, color, fillColor, thickness, UUID, scale, deltaX, deltaY);
@@ -33,16 +34,6 @@ public class Circle extends Ellipse {
     }
 
     @Override
-    public void setProperties(Map<String, Double> properties) {
-
-    }
-
-    @Override
-    public Map<String, Double> getProperties() {
-        return null;
-    }
-
-    @Override
     public Object clone() throws CloneNotSupportedException {
         return new Circle(this.centerPoint, this.width, this.height, getColor(), getFillColor(), getThickness(), getUUID(), getScale(), getDeltaX(), getDeltaY());
     }
@@ -58,5 +49,10 @@ public class Circle extends Ellipse {
 
     public void setCenter(int x, int y) {
         this.centerPoint = new Point(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "Circle";
     }
 }

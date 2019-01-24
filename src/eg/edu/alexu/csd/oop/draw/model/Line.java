@@ -12,6 +12,7 @@ public class Line extends AbstractShape {
         super();
         this.firstPoint = (Point) firstPoint.clone();
     }
+    public Line() {}
 
     public Line(Point firstPoint, Point secondPoint, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
         super(color, fillColor, thickness, UUID, scale, deltaX, deltaY);
@@ -46,11 +47,6 @@ public class Line extends AbstractShape {
         secondPoint = new Point(secondPoint.x + deltaX, secondPoint.y + deltaY);
         buildCenters();
         deltaY = deltaX = 0;
-    }
-
-    @Override
-    public Map<String, Double> getProperties() {
-        return null;
     }
 
     @Override
@@ -93,5 +89,9 @@ public class Line extends AbstractShape {
         firstPoint.y = centerPoint.y + this.height / 2;
         secondPoint.y = centerPoint.y - this.height / 2;
         scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
+    }
+    @Override
+    public String toString() {
+        return "Line";
     }
 }

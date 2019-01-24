@@ -1,6 +1,5 @@
 package eg.edu.alexu.csd.oop.draw.controller;
 
-import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
 import eg.edu.alexu.csd.oop.draw.view.PaintPanel;
 
 import javax.swing.*;
@@ -30,7 +29,7 @@ public class PaintPanelMouseMotionListener implements MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (panelController.getShape() != null && !((AbstractShape) panelController.getShape()).isCompleted()) {
+        if (panelController.getShape() != null && !(panelController.getShape()).isCompleted()) {
             panelController.getShape().setPosition(e.getPoint());
             paintPanel.repaint();
         }

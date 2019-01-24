@@ -12,6 +12,9 @@ public class Rectangle extends AbstractShape {
         this.firstPoint = (Point) headPoint.clone();
         centerPoint = firstPoint;
     }
+    public Rectangle() {
+        super();
+    }
 
     public Rectangle(Point firstPoint, Point secondPoint, Point center, int width, int height, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
         super(color, fillColor, thickness, UUID, scale, deltaX, deltaY);
@@ -37,14 +40,7 @@ public class Rectangle extends AbstractShape {
     }
 
     @Override
-    public void setProperties(Map<String, Double> properties) {
-
-    }
-
-    @Override
-    public Map<String, Double> getProperties() {
-        return null;
-    }
+    public void setProperties(Map<String, Double> properties) {}
 
     @Override
     public void draw(Graphics canvas) {
@@ -73,6 +69,8 @@ public class Rectangle extends AbstractShape {
 
     protected void buildCenters() {
     }
+
+    protected void callSuperDraw(Graphics canvas) {super.draw(canvas);};
 
     @Override
     public void applyMovement() {
@@ -104,12 +102,15 @@ public class Rectangle extends AbstractShape {
         buildCenters();
     }
 
-    private int getScaledWidth(){
+    protected int getScaledWidth(){
         return (int) (width * ((double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE));
     }
-    private int getScaledHeight(){
+    protected int getScaledHeight(){
         return (int) (height * ((double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE));
     }
 
-
+    @Override
+    public String toString() {
+        return "Rectangle";
+    }
 }

@@ -9,12 +9,12 @@ import javax.swing.event.ChangeListener;
 
 public class ColorModifierListener implements ChangeListener {
 
-    private final Engine engine;
+    private final DrawingEngine engine;
     private final JColorChooser chooser;
     private final PaintWindow paintWindow;
 
 
-    public ColorModifierListener(PaintWindow paintWindow, JColorChooser chooser){
+    public ColorModifierListener(PaintWindow paintWindow, JColorChooser chooser) {
         this.paintWindow = paintWindow;
         this.engine = Engine.getInstance();
         this.chooser = chooser;

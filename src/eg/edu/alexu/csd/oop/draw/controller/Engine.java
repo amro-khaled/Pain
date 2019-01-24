@@ -5,7 +5,6 @@ import eg.edu.alexu.csd.oop.draw.Shape;
 import eg.edu.alexu.csd.oop.draw.command.ActionCommand;
 import eg.edu.alexu.csd.oop.draw.exceptions.ShapeNotFoundException;
 import eg.edu.alexu.csd.oop.draw.model.AbstractShape;
-import eg.edu.alexu.csd.oop.draw.model.Circle;
 import eg.edu.alexu.csd.oop.draw.utils.CalculationHelper;
 import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
@@ -16,18 +15,20 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public class Engine implements DrawingEngine {
 
     private static Engine instance = null;
 
-    List<AbstractShape> shapes;
+    List<Shape> shapes;
     private Color color;
     private Stack<ActionCommand> redoStack;
     private Stack<ActionCommand> undoStack;
     private Map<String, Class> loadedClasses;
-    private List<AbstractShape> capturedShapes;
+    private List<Shape> capturedShapes;
 
     private Engine() {
         redoStack = new Stack<>();
@@ -35,6 +36,13 @@ public class Engine implements DrawingEngine {
         shapes = new ArrayList<>();
         color = Color.BLACK;
         loadedClasses = new HashMap<>();
+        loadedClasses.put("Line", null);
+        loadedClasses.put("Circle", null);
+        loadedClasses.put("Ellipse", null);
+        loadedClasses.put("Rectangle", null);
+        loadedClasses.put("Square", null);
+        loadedClasses.put("Triangle", null);
+
     }
 
     @Override
@@ -45,7 +53,12 @@ public class Engine implements DrawingEngine {
 
     @Override
     public void addShape(Shape shape) {
-        shapes.add((AbstractShape) shape);
+        shapes.add(shape);
+        addAction(new ActionCommand(() -> {
+            shapes.remove(shape);
+        }, () -> {
+            shapes.add(shape);
+        }));
     }
 
     @Override
@@ -54,19 +67,29 @@ public class Engine implements DrawingEngine {
         if (!shapes.removeIf(k -> k.equals(shape))) {
             throw new ShapeNotFoundException("Removing non-existing Shape");
         }
+        addAction(new ActionCommand(() -> {
+            shapes.add(shape);
+        }, () -> {
+            shapes.remove(shape);
+        }));
     }
 
     @Override
     public void updateShape(Shape oldShape, Shape newShape) {
-        removeShape(oldShape);
-        addShape(newShape);
+        shapes.remove(oldShape);
+        shapes.add(newShape);
+        addAction(new ActionCommand(() -> {
+            shapes.remove(newShape);
+        }, () -> {
+            shapes.add(oldShape);
+        }));
     }
 
     @Override
     public Shape[] getShapes() {
-        AbstractShape[] returnedShapes = new AbstractShape[shapes.size()];
+        Shape[] returnedShapes = new Shape[shapes.size()];
         int count = 0;
-        for (AbstractShape shape : shapes) {
+        for (Shape shape : shapes) {
             returnedShapes[count++] = shape;
         }
         return returnedShapes;
@@ -74,20 +97,78 @@ public class Engine implements DrawingEngine {
 
     @Override
     public List<Class<? extends Shape>> getSupportedShapes() {
-        return null;
+        List<Class<? extends Shape>> ans = new ArrayList<Class<? extends Shape>>();
+        JarFile jarFile;
+        try {
+
+            BufferedReader reader = new BufferedReader(new FileReader("jarPath.txt"));
+            String path = reader.readLine();
+            reader.close();
+
+            jarFile = new JarFile(path);
+
+            Enumeration<JarEntry> e = jarFile.entries();
+
+            URL[] urls = {new URL("jar:file:" + path + "!/")};
+            URLClassLoader cl = URLClassLoader.newInstance(urls);
+
+            while (e.hasMoreElements()) {
+                JarEntry je = e.nextElement();
+                if (je.isDirectory() || !je.getName().endsWith(".class")) {
+                    continue;
+                }
+                // -6 because of .class
+                String className = je.getName().substring(0, je.getName().length() - 6);
+                String[] tmp = className.split("/");
+                if (!(tmp[tmp.length - 2].equals("model") && tmp[tmp.length - 3].equals("draw"))) continue;
+                className = className.replace('/', '.');
+                @SuppressWarnings("unchecked")
+                Class<? extends Shape> c = (Class<? extends Shape>) cl.loadClass(className);
+                if (className.equals("eg.edu.alexu.csd.oop.draw.model.AbstractShape")) continue;
+                Object x = c.newInstance();
+                if (x instanceof Shape) {
+                    ans.add(c);
+                }
+            }
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (ClassNotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (InstantiationException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IllegalAccessException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        return ans;
     }
 
     @Override
     public void undo() {
-        if(undoStack.empty()) return;
+        if (undoStack.size() > 20) {
+            Stack<ActionCommand> tmp = new Stack<>();
+            while (!undoStack.isEmpty()) tmp.push(undoStack.pop());
+            while (tmp.size() > 20) tmp.pop();
+            while (!tmp.isEmpty()) undoStack.push(tmp.pop());
+        }
+        if (undoStack.empty()) return;
         ActionCommand command = undoStack.pop();
         command.undo();
         redoStack.push(command);
+        if (redoStack.size() == 21) {
+            Stack<ActionCommand> tmp = new Stack<>();
+            while (!redoStack.isEmpty()) tmp.push(redoStack.pop());
+            tmp.pop();
+            while (!tmp.isEmpty()) redoStack.push(tmp.pop());
+        }
     }
 
     @Override
     public void redo() {
-        if(redoStack.empty()) return;
+        if (redoStack.empty()) return;
         ActionCommand command = redoStack.pop();
         command.redo();
         undoStack.push(command);
@@ -95,31 +176,28 @@ public class Engine implements DrawingEngine {
 
     @Override
     public void save(String path) {
-        try
-        {
+        try {
             FileOutputStream fos = new FileOutputStream(path);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeInt(shapes.size());
-            for(AbstractShape i : shapes)
+            for (Shape i : shapes)
                 oos.writeObject(i);
             oos.close();
             fos.close();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void load(String path) {
-        try
-        {
+        try {
             FileInputStream fis = new FileInputStream(path);
             ObjectInputStream ois = new ObjectInputStream(fis);
             int n = ois.readInt();
-            while(n-- > 0){
-                shapes.add((AbstractShape) ois.readObject());
+            shapes = new ArrayList<>();
+            while (n-- > 0) {
+                shapes.add((Shape) ois.readObject());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -132,7 +210,7 @@ public class Engine implements DrawingEngine {
 
 
     public void selectShapes(Point point) {
-        for (AbstractShape shape : shapes) {
+        for (Shape shape : shapes) {
             if (!shape.isSelected() && shape.isOnBoarder(point)) {
                 shape.select();
                 return;
@@ -142,33 +220,33 @@ public class Engine implements DrawingEngine {
     }
 
     public void unSelectAll() {
-        for (AbstractShape shape : shapes) shape.unSelect();
+        for (Shape shape : shapes) shape.unSelect();
     }
 
-    public List<AbstractShape> deleteSelectedShapes() {
-        List<AbstractShape> deletedShapes = getSelectedShapes();
-        List<AbstractShape> deletedShapesClone = new ArrayList<>(deletedShapes);
-        addAction(new ActionCommand(()->shapes.addAll(deletedShapesClone), ()->shapes.removeAll(deletedShapesClone)));
+    public List<Shape> deleteSelectedShapes() {
+        List<Shape> deletedShapes = getSelectedShapes();
+        List<Shape> deletedShapesClone = new ArrayList<>(deletedShapes);
+        addAction(new ActionCommand(() -> shapes.addAll(deletedShapesClone), () -> shapes.removeAll(deletedShapesClone)));
         shapes.removeAll(deletedShapes);
         return deletedShapes;
     }
 
     public void setColor(Color color) throws CloneNotSupportedException {
-        List<AbstractShape> selectedShapes = getSelectedShapes();
-        List<AbstractShape> coloredShapes = new ArrayList<>();
+        List<Shape> selectedShapes = getSelectedShapes();
+        List<Shape> coloredShapes = new ArrayList<>();
         this.color = color;
         unSelectAll();
-        for(AbstractShape shape : selectedShapes){
-            AbstractShape coloredShape = (AbstractShape) shape.clone();
+        for (Shape shape : selectedShapes) {
+            Shape coloredShape = (Shape) shape.clone();
             coloredShape.setColor(color);
             coloredShapes.add(coloredShape);
         }
         shapes.removeAll(selectedShapes);
         shapes.addAll(coloredShapes);
-        addAction(new ActionCommand(()->{
+        addAction(new ActionCommand(() -> {
             shapes.removeAll(coloredShapes);
             shapes.addAll(selectedShapes);
-        }, ()->{
+        }, () -> {
             shapes.removeAll(selectedShapes);
             shapes.addAll(coloredShapes);
         }));
@@ -179,10 +257,10 @@ public class Engine implements DrawingEngine {
     }
 
     public Point getMovingCenter(Point point) {
-        for (Point centerPoint : shapes.stream().filter(AbstractShape::isSelected).map(k -> k.getMovedCenterPoint()).collect(Collectors.toList())) {
-            if (CalculationHelper.dist(centerPoint, point) <= STATIC_VARS.CENTERS_RADIUS) {
+        for (Object centerPoint : shapes.stream().filter(Shape::isSelected).map(k -> k.getMovedCenterPoint()).collect(Collectors.toList())) {
+            if (CalculationHelper.dist((Point) centerPoint, point) <= STATIC_VARS.CENTERS_RADIUS) {
                 captureSelectedShapes();
-                return centerPoint;
+                return (Point) centerPoint;
             }
         }
         return null;
@@ -195,27 +273,27 @@ public class Engine implements DrawingEngine {
         int deltaY = point.y - circle.y;
 
         shapes.stream()
-                .filter(AbstractShape::isSelected)
+                .filter(Shape::isSelected)
                 .forEach(k -> k.moveCenter(deltaX, deltaY));
     }
 
     public void scaleSelectedShapes(int sliderVal) {
         shapes.stream()
-                .filter(AbstractShape::isSelected)
+                .filter(Shape::isSelected)
                 .forEach(k -> k.setScale(sliderVal));
     }
 
     public void resizeSelectedShapes() {
-        List<AbstractShape> resizedShapes = new ArrayList<>();
-        List<AbstractShape> originalShapes = shapes.stream()
-                .filter(AbstractShape::isSelected)
+        List<Shape> resizedShapes = new ArrayList<>();
+        List<Shape> originalShapes = shapes.stream()
+                .filter(Shape::isSelected)
                 .filter(k -> k.getScale() != STATIC_VARS.ORIGINAL_SHAPE_SCALE)
                 .collect(Collectors.toList());
-        if(originalShapes.isEmpty())return;
+        if (originalShapes.isEmpty()) return;
 
-        for(AbstractShape shape : originalShapes) {
+        for (Shape shape : originalShapes) {
             try {
-                AbstractShape clonedShape = (AbstractShape) shape.clone();
+                Shape clonedShape = (Shape) shape.clone();
                 shape.clearScale();
                 resizedShapes.add(clonedShape);
             } catch (CloneNotSupportedException e) {
@@ -223,21 +301,21 @@ public class Engine implements DrawingEngine {
             }
         }
         shapes.removeAll(originalShapes);
-        resizedShapes.forEach(AbstractShape::resize);
+        resizedShapes.forEach(Shape::resize);
         shapes.addAll(resizedShapes);
         addAction(new ActionCommand(
-                ()->{
+                () -> {
                     shapes.removeAll(resizedShapes);
                     shapes.addAll(originalShapes);
                 },
-                ()->{
+                () -> {
                     shapes.removeAll(originalShapes);
                     shapes.addAll(resizedShapes);
                 }));
     }
 
-    public List<AbstractShape> getSelectedShapes() {
-        return shapes.stream().filter(AbstractShape::isSelected).collect(Collectors.toList());
+    public List<Shape> getSelectedShapes() {
+        return shapes.stream().filter(Shape::isSelected).collect(Collectors.toList());
     }
 
     public void addAction(ActionCommand actionCommand) {
@@ -261,7 +339,7 @@ public class Engine implements DrawingEngine {
                     break;
                 }
             }
-            nameOfClass = str.substring(++i, str.length() - 6);
+            nameOfClass = str.substring(++i, str.lastIndexOf('.'));
             URL name;
 
             name = new URL(str.substring(0, i));
@@ -272,17 +350,18 @@ public class Engine implements DrawingEngine {
         }
         return null;
     }
+
     private void captureSelectedShapes() {
-        if(capturedShapes != null)return;
+        if (capturedShapes != null) return;
         capturedShapes = getSelectedShapes();
     }
 
     private String loadClass(URL name, String nameOfClass) {
         System.out.println(name.toString());
-        URL[] my = { name };
+        URL[] my = {name};
         URLClassLoader classloader = new URLClassLoader(my);
         try {
-            Class myClass = classloader.loadClass( STATIC_VARS.PACKAGE_NAME + nameOfClass);
+            Class myClass = classloader.loadClass(STATIC_VARS.PACKAGE_NAME + nameOfClass);
             if (loadedClasses.keySet().contains(nameOfClass)) {
                 System.out.println("u already loaded such a class");
                 return null;
@@ -296,9 +375,9 @@ public class Engine implements DrawingEngine {
         return null;
     }
 
-    public AbstractShape createLoadedClassShape(String curButton) {
+    public Shape createLoadedClassShape(String curButton) {
         try {
-            return (AbstractShape) loadedClasses.get(curButton).newInstance();
+            return (Shape) loadedClasses.get(curButton).newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -308,29 +387,29 @@ public class Engine implements DrawingEngine {
     }
 
     public void actionMovedShapes() {
-        if(capturedShapes == null)return;
+        if (capturedShapes == null) return;
         capturedShapes = null;
-        List<AbstractShape> originalShapes = getSelectedShapes();
-        List<AbstractShape> movedShapes = new ArrayList<>();
-        for(AbstractShape shape : originalShapes){
+        List<Shape> originalShapes = getSelectedShapes();
+        List<Shape> movedShapes = new ArrayList<>();
+        for (Shape shape : originalShapes) {
             try {
-                movedShapes.add((AbstractShape) shape.clone());
+                movedShapes.add((Shape) shape.clone());
                 shape.resetMovement();
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
         }
-        originalShapes.forEach(AbstractShape::unSelect);
-        movedShapes.forEach(AbstractShape::applyMovement);
+        originalShapes.forEach(Shape::unSelect);
+        movedShapes.forEach(Shape::applyMovement);
         shapes.removeAll(originalShapes);
         shapes.addAll(movedShapes);
-        addAction(new ActionCommand(()->{
+        addAction(new ActionCommand(() -> {
             shapes.removeAll(movedShapes);
             shapes.addAll(originalShapes);
         },
-        ()->{
-            shapes.removeAll(originalShapes);
-            shapes.addAll(movedShapes);
-        }));
+                () -> {
+                    shapes.removeAll(originalShapes);
+                    shapes.addAll(movedShapes);
+                }));
     }
 }

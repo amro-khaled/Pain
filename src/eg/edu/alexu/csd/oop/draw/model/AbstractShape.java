@@ -7,6 +7,7 @@ import eg.edu.alexu.csd.oop.draw.utils.STATIC_VARS;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractShape implements Shape, Serializable {
@@ -49,27 +50,6 @@ public abstract class AbstractShape implements Shape, Serializable {
         return deltaY;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public Point getCenterPoint() {
-        return centerPoint;
-    }
-
-    public Point getFirstPoint() {
-        return firstPoint;
-    }
-
-    public Point getSecondPoint() {
-        return secondPoint;
-    }
-
-
     AbstractShape() {
         scale = STATIC_VARS.INIT_SLIDER_VAL;
         thickness = STATIC_VARS.DEFAULT_THICKNESS;
@@ -93,7 +73,9 @@ public abstract class AbstractShape implements Shape, Serializable {
 
     @Override
     public Map<String, Double> getProperties() {
-        return null;
+        HashMap<String, Double> property = new HashMap<>();
+        property.put("scale", scale + 0.0);
+        return property;
     }
 
     @Override
@@ -178,12 +160,13 @@ public abstract class AbstractShape implements Shape, Serializable {
     protected int getUUID() {
         return this.UUID;
     }
+
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         return o instanceof AbstractShape && ((AbstractShape) o).UUID == this.UUID;
     }
 
-    public final void clearScale(){
+    public final void clearScale() {
         this.scale = STATIC_VARS.ORIGINAL_SHAPE_SCALE;
     }
 
@@ -199,9 +182,12 @@ public abstract class AbstractShape implements Shape, Serializable {
         return new Point(centerPoint.x + deltaX, centerPoint.y + deltaY);
     }
 
-    public final void resetMovement(){
+    public final void resetMovement() {
         deltaY = deltaX = 0;
     }
 
     public abstract void applyMovement();
+
+    @Override
+    public abstract String toString();
 }

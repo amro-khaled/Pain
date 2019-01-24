@@ -440,7 +440,7 @@ public class SanityTest {
             for(Class<? extends Shape> c: list){
                 System.out.println(c);
                 System.out.println(c.getName());
-                if(c.getName().equals("eg.edu.alexu.csd.oop.draw.RoundRectangle")){
+                if(c.getName().equals("eg.edu.alexu.csd.oop.draw.model.RoundRectangle")){
                     return;
                 }
             }
@@ -457,7 +457,7 @@ public class SanityTest {
         try {
             for(Class<? extends Shape> c: instance.getSupportedShapes()){
                 System.out.println(c);
-                if(c.getName().equals("eg.edu.alexu.csd.oop.draw.RoundRectangle")){
+                if(c.getName().equals("eg.edu.alexu.csd.oop.draw.model.RoundRectangle")){
                     instance.addShape(c.newInstance());
                     instance.addShape(c.newInstance());
                     instance.addShape(c.newInstance());

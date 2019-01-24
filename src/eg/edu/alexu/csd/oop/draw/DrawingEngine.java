@@ -1,8 +1,9 @@
 package eg.edu.alexu.csd.oop.draw;
 
-import eg.edu.alexu.csd.oop.draw.Shape;
+import eg.edu.alexu.csd.oop.draw.command.ActionCommand;
 
 import java.awt.*;
+import java.util.List;
 
 public interface DrawingEngine {
 
@@ -18,7 +19,7 @@ public interface DrawingEngine {
     
     /* return the classes (types) of supported shapes already exist and the
      * ones that can be dynamically loaded at runtime (see Part 3) */
-    public java.util.List<Class<? extends Shape>> getSupportedShapes();
+    public List<Class<? extends Shape>> getSupportedShapes();
   
     /* add to the supported shapes the new shape class (see Part 3) */
     // public void installPluginShape(String jarPath);
@@ -33,4 +34,13 @@ public interface DrawingEngine {
     public void save(String path);
     public void load(String path);
 
+    void setColor(Color color) throws CloneNotSupportedException;
+
+    void selectShapes(Point point);
+
+    Point getMovingCenter(Point point);
+
+    void addAction(ActionCommand actionCommand);
+
+    void actionMovedShapes();
 }

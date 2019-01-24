@@ -15,6 +15,9 @@ public class Triangle extends AbstractShape {
         this.firstPoint = firstPoint;
         readyForThirdPoint = false;
     }
+    public Triangle() {
+
+    }
 
     public Triangle(Point firstPoint, Point secondPoint, Point thirdPoint, Color color, Color fillColor, int thickness, int UUID, int scale, int deltaX, int deltaY) {
         super(color, fillColor, thickness, UUID, scale, deltaX, deltaY);
@@ -55,11 +58,6 @@ public class Triangle extends AbstractShape {
     @Override
     public void setProperties(Map<String, Double> properties) {
 
-    }
-
-    @Override
-    public Map<String, Double> getProperties() {
-        return null;
     }
 
     @Override
@@ -123,5 +121,9 @@ public class Triangle extends AbstractShape {
     public int getScaledPoint(int centerVal, int pointVal) {
         double ratio =  ((double) scale / STATIC_VARS.ORIGINAL_SHAPE_SCALE);
         return centerVal - (int)((centerVal - pointVal) * ratio);
+    }
+    @Override
+    public String toString() {
+        return "Triangle";
     }
 }
