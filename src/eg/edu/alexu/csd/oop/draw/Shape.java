@@ -37,6 +37,8 @@ public interface Shape {
 
     void select();
 
+    void applyMovement();
+
     void unSelect();
 
     Object getMovedCenterPoint();
@@ -53,9 +55,6 @@ public interface Shape {
     }
 
     void resetMovement();
-
-    static void applyMovement(Shape shape) {
-    }
 
     boolean isCompleted();
 

@@ -186,8 +186,6 @@ public abstract class AbstractShape implements Shape, Serializable {
         deltaY = deltaX = 0;
     }
 
-    public abstract void applyMovement();
-
     @Override
     public abstract String toString();
 }
