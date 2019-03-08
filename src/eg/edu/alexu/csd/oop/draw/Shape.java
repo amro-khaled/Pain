@@ -51,8 +51,7 @@ public interface Shape {
 
     void clearScale();
 
-    static void resize(Shape shape) {
-    }
+    void resize();
 
     void resetMovement();
 
